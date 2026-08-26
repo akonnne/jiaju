@@ -45,3 +45,7 @@ dependency/*/.npmcache/
 # ---------- 安装过程残留（废弃目录，待清理） ----------
 frontend/_nm_broken/
 frontend/_nm_old/
+
+# ---------- vite 构建临时文件 ----------
+*.timestamp-*.mjs
+*.timestamp-*.js
