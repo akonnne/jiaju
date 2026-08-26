@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 740" width="1200" height="740" font-family="PingFang SC, Microsoft YaHei, sans-serif">
+  <defs>
+    <marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L8,5 L0,10 z" fill="#7A5C3E"/>
+    </marker>
+  </defs>
+  <style>
+    .bg{fill:#FAF7F1}
+    .layer{fill:none;stroke:#B9A187;stroke-dasharray:6 4;rx:14}
+    .layer-name{font-size:14px;font-weight:700;fill:#5F4730}
+    .b{fill:#FFFFFF;stroke:#E5DCCE;stroke-width:1;rx:6}
+    .b-name{font-size:12px;font-weight:600;fill:#FFFFFF}
+    .b-text{font-size:12px;fill:#2B2520}
+    .b-walnut{fill:#7A5C3E;stroke:#7A5C3E;rx:6}
+    .b-dark{fill:#2B2520;stroke:#2B2520;rx:6}
+    .b-sand{fill:#F0EAE1;stroke:#C9BBA0;rx:6}
+    .arr{stroke:#7A5C3E;stroke-width:1.6;fill:none}
+    .arr-label{font-size:11px;fill:#6E675E}
+    .note{font-size:11px;fill:#6E675E}
+  </style>
+
+  <rect class="bg" width="1200" height="740"/>
+  <text x="600" y="34" text-anchor="middle" font-size="20" font-weight="700" fill="#2B2520">后台管理系统 · 模块架构图（backend/）</text>
+  <text x="600" y="56" text-anchor="middle" class="note">React 18 + Vite + TypeScript + Ant Design · RBAC 三角色（system/editor/service）· 依据开发技术文档第 6 章</text>
+
+  <!-- ===== 第 1 层：用户层 ===== -->
+  <rect class="layer" x="30" y="72" width="1140" height="64"/>
+  <text x="46" y="92" class="layer-name">用户层</text>
+  <rect class="b-dark" x="400" y="84" width="400" height="40"/>
+  <text x="600" y="109" text-anchor="middle" class="b-name">YT 公司内部人员（系统管理员 / 内容编辑 / 客服）</text>
+
+  <!-- ===== 第 2 层：视图层 ===== -->
+  <rect class="layer" x="30" y="156" width="1140" height="132"/>
+  <text x="46" y="176" class="layer-name">视图层（10 视图）</text>
+  <text x="60" y="198" class="b-text" font-weight="700" fill="#5F4730">认证</text>
+  <rect class="b" x="60" y="206" width="110" height="40"/><text x="115" y="231" text-anchor="middle" class="b-text">LoginPage</text>
+  <text x="200" y="198" class="b-text" font-weight="700" fill="#5F4730">总览</text>
+  <rect class="b" x="200" y="206" width="120" height="40"/><text x="260" y="231" text-anchor="middle" class="b-text">DashboardPage</text>
+  <text x="350" y="198" class="b-text" font-weight="700" fill="#5F4730">内容管理</text>
+  <rect class="b" x="350" y="206" width="110" height="40"/><text x="405" y="231" text-anchor="middle" class="b-text">ProductsPage</text>
+  <rect class="b" x="470" y="206" width="100" height="40"/><text x="520" y="231" text-anchor="middle" class="b-text">NewsPage</text>
+  <rect class="b" x="580" y="206" width="110" height="40"/><text x="635" y="231" text-anchor="middle" class="b-text">BannersPage</text>
+  <rect class="b" x="700" y="206" width="110" height="40"/><text x="755" y="231" text-anchor="middle" class="b-text">CompanyPage</text>
+  <rect class="b" x="820" y="206" width="100" height="40"/><text x="870" y="231" text-anchor="middle" class="b-text">JobsPage</text>
+  <text x="950" y="198" class="b-text" font-weight="700" fill="#5F4730">线索 / 系统</text>
+  <rect class="b" x="950" y="206" width="100" height="40"/><text x="1000" y="231" text-anchor="middle" class="b-text">Messages</text>
+  <rect class="b" x="1060" y="206" width="90" height="40"/><text x="1105" y="231" text-anchor="middle" class="b-text">Users</text>
+  <rect class="b" x="60" y="258" width="110" height="24"/><text x="115" y="274" text-anchor="middle" class="b-text">RolesPage</text>
+
+  <!-- ===== 第 3 层：状态与权限 ===== -->
+  <rect class="layer" x="30" y="308" width="1140" height="64"/>
+  <text x="46" y="328" class="layer-name">状态与权限层（RBAC 前端实现）</text>
+  <rect class="b-walnut" x="90" y="320" width="200" height="40"/><text x="190" y="345" text-anchor="middle" class="b-name">Zustand：user / permissions</text>
+  <rect class="b-walnut" x="330" y="320" width="180" height="40"/><text x="420" y="345" text-anchor="middle" class="b-name">RequireAuth 路由守卫</text>
+  <rect class="b-walnut" x="550" y="320" width="200" height="40"/><text x="650" y="345" text-anchor="middle" class="b-name">RequirePerm(perm) 守卫</text>
+  <rect class="b-walnut" x="790" y="320" width="140" height="40"/><text x="860" y="345" text-anchor="middle" class="b-name">Can 按钮控制</text>
+  <rect class="b" x="970" y="320" width="150" height="40"/><text x="1045" y="345" text-anchor="middle" class="b-text">菜单按权限显隐</text>
+
+  <!-- ===== 第 4 层：组件层 ===== -->
+  <rect class="layer" x="30" y="392" width="1140" height="64"/>
+  <text x="46" y="412" class="layer-name">组件层（Ant Design 5，ConfigProvider 主题定制）</text>
+  <rect class="b" x="70" y="404" width="120" height="40"/><text x="130" y="429" text-anchor="middle" class="b-text">Layout（Sider 深色）</text>
+  <rect class="b" x="210" y="404" width="100" height="40"/><text x="260" y="429" text-anchor="middle" class="b-text">Table</text>
+  <rect class="b" x="330" y="404" width="100" height="40"/><text x="380" y="429" text-anchor="middle" class="b-text">Form / Modal</text>
+  <rect class="b" x="450" y="404" width="100" height="40"/><text x="500" y="429" text-anchor="middle" class="b-text">Upload</text>
+  <rect class="b" x="570" y="404" width="110" height="40"/><text x="625" y="429" text-anchor="middle" class="b-text">Tag / Status</text>
+  <rect class="b" x="700" y="404" width="110" height="40"/><text x="755" y="429" text-anchor="middle" class="b-text">Popconfirm</text>
+  <rect class="b" x="830" y="404" width="130" height="40"/><text x="895" y="429" text-anchor="middle" class="b-text">Charts（SVG）</text>
+  <rect class="b" x="980" y="404" width="150" height="40"/><text x="1055" y="429" text-anchor="middle" class="b-text">主题 token #7A5C3E</text>
+
+  <!-- ===== 第 5 层：API 层 ===== -->
+  <rect class="layer" x="30" y="476" width="1140" height="64"/>
+  <text x="46" y="496" class="layer-name">API 层（axios + JWT）</text>
+  <rect class="b" x="80" y="488" width="200" height="40"/><text x="180" y="513" text-anchor="middle" class="b-text">http.ts（Bearer 注入 / 401/403 拦截）</text>
+  <rect class="b" x="320" y="488" width="150" height="40"/><text x="395" y="513" text-anchor="middle" class="b-text">authApi（login/me）</text>
+  <rect class="b" x="510" y="488" width="160" height="40"/><text x="590" y="513" text-anchor="middle" class="b-text">contentApi（产品/新闻/…）</text>
+  <rect class="b" x="710" y="488" width="150" height="40"/><text x="785" y="513" text-anchor="middle" class="b-text">messageApi / statsApi</text>
+  <rect class="b" x="900" y="488" width="150" height="40"/><text x="975" y="513" text-anchor="middle" class="b-text">userApi / roleApi</text>
+  <rect class="b" x="1070" y="488" width="90" height="40"/><text x="1115" y="513" text-anchor="middle" class="b-text">uploadApi</text>
+
+  <!-- ===== 第 6 层：后端 Api ===== -->
+  <rect class="layer" x="30" y="560" width="1140" height="70"/>
+  <text x="46" y="580" class="layer-name">后端 Api（Python FastAPI）</text>
+  <rect class="b-walnut" x="120" y="572" width="300" height="44"/><text x="270" y="598" text-anchor="middle" class="b-name">/api/sys/*（35 个管理接口，JWT + RBAC）</text>
+  <rect class="b-walnut" x="500" y="572" width="180" height="44"/><text x="590" y="598" text-anchor="middle" class="b-name">FastAPI + 权限中间件</text>
+  <rect class="b-sand" x="740" y="572" width="150" height="44"/><text x="815" y="589" text-anchor="middle" class="b-text">SQLite yt.db</text>
+  <text x="815" y="606" text-anchor="middle" class="note">16 张表</text>
+  <rect class="b-sand" x="930" y="572" width="180" height="44"/><text x="1020" y="589" text-anchor="middle" class="b-text">对象存储 COS/OSS</text>
+  <text x="1020" y="606" text-anchor="middle" class="note">图片上传</text>
+
+  <!-- ===== 层间箭头 ===== -->
+  <line class="arr" x1="600" y1="136" x2="600" y2="154" marker-end="url(#a2)"/>
+  <line class="arr" x1="600" y1="288" x2="600" y2="306" marker-end="url(#a2)"/>
+  <line class="arr" x1="600" y1="372" x2="600" y2="390" marker-end="url(#a2)"/>
+  <line class="arr" x1="600" y1="456" x2="600" y2="474" marker-end="url(#a2)"/>
+  <line class="arr" x1="270" y1="540" x2="270" y2="558" marker-end="url(#a2)"/>
+  <text x="612" y="300" class="arr-label">路由 + 权限守卫</text>
+  <text x="612" y="384" class="arr-label">渲染 AntD 组件</text>
+  <text x="612" y="468" class="arr-label">调用 API（携带 JWT）</text>
+  <text x="290" y="552" class="arr-label">HTTP / REST</text>
+
+  <!-- ===== 图例 ===== -->
+  <g transform="translate(40,652)">
+    <text x="0" y="0" class="note"><rect x="52" y="-10" width="12" height="12" rx="3" fill="#7A5C3E"/> 核心模块（权限/状态/后端接口）　<rect x="230" y="-10" width="12" height="12" rx="3" fill="#FFFFFF" stroke="#E5DCCE"/> 普通模块　<rect x="320" y="-10" width="12" height="12" rx="3" fill="#F0EAE1" stroke="#C9BBA0"/> 数据存储</text>
+    <text x="500" y="0" class="note">RBAC 演示：登录时选择角色 → 菜单按权限码显隐（DP-1：内部人员使用，非管理员专用）</text>
+  </g>
+</svg>

@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YT 品牌家具官网 · 前台产品原型（v1.4）</title>
+<style>
+  /* ============ Design Tokens：现代简约 · 家具暖木系 ============ */
+  :root{
+    --walnut:#7A5C3E;        /* 主色：胡桃木 */
+    --walnut-dark:#5F4730;
+    --ink:#2B2520;           /* 墨色文字 */
+    --ink-soft:#6E675E;      /* 次要文字 */
+    --cream:#FAF7F1;         /* 背景：暖米白 */
+    --sand:#F0EAE1;          /* 次级背景：浅沙 */
+    --line:#E5DCCE;          /* 边框 */
+    --white:#FFFFFF;
+    --p1:#B98A4E;            /* P1 标签色 */
+    --shadow:0 10px 30px rgba(43,37,32,.08);
+    --radius:6px;
+    --font-serif:'Noto Serif SC','Songti SC','SimSun',serif;
+    --font-sans:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--font-sans);color:var(--ink);background:var(--cream);font-size:15px;line-height:1.7;}
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 24px;}
+  .serif{font-family:var(--font-serif);}
+
+  /* ============ 顶部导航（严格按 PRD v1.4） ============ */
+  .topbar{background:var(--ink);color:#EDE6DA;font-size:12.5px;letter-spacing:.5px;}
+  .topbar .wrap{display:flex;justify-content:space-between;align-items:center;height:36px;}
+  .topbar a{color:#C9BFA9;transition:color .2s;}
+  .topbar a:hover{color:#fff;}
+
+  .header{position:sticky;top:0;z-index:100;background:rgba(250,247,241,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .header .wrap{display:flex;align-items:center;height:72px;}
+  .logo{display:flex;align-items:center;gap:10px;margin-right:48px;flex-shrink:0;}
+  .logo-mark{width:38px;height:38px;background:var(--walnut);color:#fff;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--font-serif);font-weight:700;font-size:18px;letter-spacing:1px;}
+  .logo-name{font-family:var(--font-serif);font-size:19px;font-weight:700;letter-spacing:4px;}
+  .logo-sub{font-size:10px;color:var(--ink-soft);letter-spacing:3px;display:block;margin-top:-2px;}
+
+  nav.main-nav{flex:1;display:flex;gap:6px;align-items:center;}
+  .nav-item{position:relative;}
+  .nav-link{display:flex;align-items:center;gap:6px;padding:10px 16px;font-size:15px;font-weight:500;color:var(--ink);border-radius:4px;transition:color .2s,background .2s;cursor:pointer;border:none;background:none;font-family:inherit;}
+  .nav-link:hover{color:var(--walnut);}
+  .nav-item.active>.nav-link{color:var(--walnut);font-weight:600;}
+  .nav-link .arrow{width:10px;height:10px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .2s;opacity:.7;}
+  .nav-item:hover .nav-link .arrow{transform:rotate(-135deg) translateY(-1px);}
+
+  /* 二级导航下拉 */
+  .dropdown{position:absolute;top:100%;left:0;min-width:200px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);padding:8px;opacity:0;visibility:hidden;transform:translateY(8px);transition:all .22s ease;}
+  .nav-item:hover .dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+  .dropdown a{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:4px;font-size:14px;color:var(--ink);transition:background .15s,color .15s;}
+  .dropdown a:hover{background:var(--sand);color:var(--walnut);}
+  .tag-p1{font-size:10px;color:var(--p1);border:1px solid var(--p1);border-radius:3px;padding:0 5px;line-height:16px;letter-spacing:.5px;flex-shrink:0;}
+
+  .header-actions{margin-left:auto;display:flex;align-items:center;gap:10px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:inherit;}
+  .btn-primary{background:var(--walnut);color:#fff;}
+  .btn-primary:hover{background:var(--walnut-dark);}
+  .btn-ghost{background:transparent;border:1px solid var(--walnut);color:var(--walnut);}
+  .btn-ghost:hover{background:var(--walnut);color:#fff;}
+  .btn-light{background:#fff;color:var(--ink);border:1px solid var(--line);}
+  .btn-light:hover{border-color:var(--walnut);color:var(--walnut);}
+
+  .hamburger{display:none;background:none;border:none;cursor:pointer;padding:8px;}
+  .hamburger span{display:block;width:22px;height:2px;background:var(--ink);margin:5px 0;transition:.3s;}
+
+  /* ============ 页面切换 ============ */
+  .page{display:none;animation:fadeIn .4s ease;}
+  .page.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+  /* ============ 首页 Hero ============ */
+  .hero{position:relative;background:linear-gradient(135deg,#8A6A47 0%,#6E5136 55%,#57422E 100%);color:#F5EFE5;padding:120px 0 140px;overflow:hidden;}
+  .hero::after{content:'';position:absolute;right:-80px;top:-80px;width:420px;height:420px;border:1px solid rgba(255,255,255,.14);border-radius:50%;}
+  .hero::before{content:'';position:absolute;right:40px;top:40px;width:280px;height:280px;border:1px solid rgba(255,255,255,.10);border-radius:50%;}
+  .hero .wrap{position:relative;z-index:2;}
+  .hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:13px;letter-spacing:4px;color:#D8C7A8;margin-bottom:26px;}
+  .hero-eyebrow::before{content:'';width:36px;height:1px;background:#D8C7A8;}
+  .hero h1{font-family:var(--font-serif);font-size:52px;line-height:1.25;font-weight:600;letter-spacing:2px;margin-bottom:22px;}
+  .hero p{font-size:17px;color:#D9CFC0;max-width:520px;margin-bottom:38px;line-height:1.9;}
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;}
+  .btn-hero{background:#fff;color:var(--ink);}
+  .btn-hero:hover{background:#EFE6D8;}
+  .btn-hero-o{background:transparent;border:1px solid rgba(255,255,255,.6);color:#fff;}
+  .btn-hero-o:hover{background:rgba(255,255,255,.12);}
+  .hero-meta{display:flex;gap:44px;margin-top:64px;padding-top:30px;border-top:1px solid rgba(255,255,255,.16);}
+  .hero-meta .m b{font-family:var(--font-serif);font-size:26px;font-weight:600;display:block;letter-spacing:1px;}
+  .hero-meta .m span{font-size:12.5px;color:#C9BFA9;letter-spacing:2px;}
+
+  /* ============ 通用区块 ============ */
+  .section{padding:88px 0;}
+  .section.alt{background:var(--sand);}
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:44px;}
+  .sec-eyebrow{font-size:12px;letter-spacing:4px;color:var(--walnut);text-transform:uppercase;margin-bottom:10px;display:block;}
+  .sec-title{font-family:var(--font-serif);font-size:32px;font-weight:600;letter-spacing:1px;}
+  .sec-more{font-size:14px;color:var(--walnut);display:inline-flex;align-items:center;gap:6px;border-bottom:1px solid var(--walnut);padding-bottom:3px;}
+  .sec-more:hover{color:var(--walnut-dark);}
+
+  /* 系列卡片 */
+  .series-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+  .series-card{position:relative;border-radius:10px;overflow:hidden;background:#fff;border:1px solid var(--line);transition:transform .3s,box-shadow .3s;cursor:pointer;}
+  .series-card:hover{transform:translateY(-6px);box-shadow:var(--shadow);}
+  .series-thumb{height:170px;background:linear-gradient(160deg,var(--c1,#D9CBB6),var(--c2,#B9A187));display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.9);font-family:var(--font-serif);font-size:22px;letter-spacing:6px;}
+  .series-body{padding:18px 20px;}
+  .series-body h3{font-family:var(--font-serif);font-size:17px;margin-bottom:6px;}
+  .series-body p{font-size:12.5px;color:var(--ink-soft);}
+  .series-count{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.85);color:var(--ink);font-size:11px;padding:3px 9px;border-radius:20px;}
+
+  /* 产品卡片 */
+  .product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+  .product-card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;transition:transform .3s,box-shadow .3s;cursor:pointer;}
+  .product-card:hover{transform:translateY(-6px);box-shadow:var(--shadow);}
+  .p-thumb{height:200px;background:linear-gradient(160deg,#EAE2D4,#CBBFA8);position:relative;display:flex;align-items:center;justify-content:center;}
+  .p-thumb .ph{font-family:var(--font-serif);color:#8E7B5F;font-size:14px;letter-spacing:2px;}
+  .p-thumb .badge{position:absolute;top:12px;left:12px;background:var(--walnut);color:#fff;font-size:10.5px;padding:3px 8px;border-radius:3px;letter-spacing:1px;}
+  .p-info{padding:16px 18px 18px;}
+  .p-info h3{font-size:15px;font-weight:600;margin-bottom:4px;}
+  .p-info .model{font-size:12px;color:var(--ink-soft);margin-bottom:10px;}
+  .p-info .meta{display:flex;justify-content:space-between;font-size:12px;color:var(--walnut);}
+
+  /* 新闻卡片 */
+  .news-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .news-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:26px 26px 24px;transition:transform .3s,box-shadow .3s;cursor:pointer;display:flex;flex-direction:column;gap:12px;}
+  .news-card:hover{transform:translateY(-6px);box-shadow:var(--shadow);}
+  .news-date{font-size:12px;color:var(--walnut);letter-spacing:1px;}
+  .news-card h3{font-family:var(--font-serif);font-size:17px;line-height:1.5;font-weight:600;}
+  .news-card p{font-size:13.5px;color:var(--ink-soft);line-height:1.8;flex:1;}
+  .news-more{align-self:flex-start;font-size:13px;color:var(--walnut);border-bottom:1px solid var(--walnut);}
+
+  /* ============ 产品中心页 ============ */
+  .page-banner{background:linear-gradient(135deg,#EFE7D9,#E2D4BF);padding:70px 0 60px;}
+  .page-banner h1{font-family:var(--font-serif);font-size:36px;margin-bottom:10px;letter-spacing:1px;}
+  .page-banner p{color:var(--ink-soft);font-size:15px;}
+  .breadcrumb{font-size:13px;color:var(--ink-soft);margin-bottom:18px;}
+  .breadcrumb b{color:var(--walnut);}
+  .filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px;}
+  .filter-chip{padding:8px 20px;border:1px solid var(--line);border-radius:30px;font-size:14px;cursor:pointer;background:#fff;transition:all .2s;color:var(--ink-soft);}
+  .filter-chip:hover{border-color:var(--walnut);color:var(--walnut);}
+  .filter-chip.on{background:var(--walnut);color:#fff;border-color:var(--walnut);}
+  .pagination{display:flex;justify-content:center;gap:8px;margin-top:50px;}
+  .pg{padding:8px 16px;border:1px solid var(--line);border-radius:4px;font-size:13.5px;cursor:pointer;background:#fff;}
+  .pg.on{background:var(--walnut);color:#fff;border-color:var(--walnut);}
+
+  /* ============ 产品详情 ============ */
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:52px;padding:70px 0;}
+  .detail-gallery .main-img{height:460px;background:linear-gradient(160deg,#E9E0D0,#C9BBA0);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-serif);color:#8E7B5F;letter-spacing:2px;margin-bottom:14px;}
+  .thumb-row{display:flex;gap:10px;}
+  .thumb-row .t{width:84px;height:84px;border-radius:6px;background:#E4DAC8;border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:#8E7B5F;}
+  .thumb-row .t.on{border-color:var(--walnut);}
+  .detail-info h1{font-family:var(--font-serif);font-size:30px;margin-bottom:6px;}
+  .detail-info .model{color:var(--ink-soft);font-size:14px;margin-bottom:18px;letter-spacing:1px;}
+  .detail-tags{display:flex;gap:8px;margin-bottom:22px;}
+  .detail-tags span{background:var(--sand);padding:5px 14px;border-radius:20px;font-size:12.5px;}
+  .params{margin:26px 0;border-top:1px solid var(--line);}
+  .params .row{display:flex;padding:13px 0;border-bottom:1px solid var(--line);font-size:14px;}
+  .params .k{width:130px;color:var(--ink-soft);flex-shrink:0;}
+  .params .v{color:var(--ink);}
+  .detail-desc{padding:40px 0;border-top:1px solid var(--line);}
+  .detail-desc h2{font-family:var(--font-serif);font-size:22px;margin-bottom:18px;}
+  .detail-desc p{color:var(--ink-soft);line-height:2;max-width:820px;}
+
+  /* ============ 新闻列表 ============ */
+  .news-list{display:flex;flex-direction:column;gap:18px;}
+  .news-item{display:flex;gap:26px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:24px 28px;cursor:pointer;transition:all .25s;align-items:center;}
+  .news-item:hover{border-color:var(--walnut);box-shadow:var(--shadow);transform:translateY(-3px);}
+  .news-item .nd{flex-shrink:0;text-align:center;width:72px;}
+  .news-item .nd .day{font-family:var(--font-serif);font-size:30px;color:var(--walnut);line-height:1;}
+  .news-item .nd .month{font-size:12px;color:var(--ink-soft);margin-top:6px;letter-spacing:1px;}
+  .news-item h3{font-family:var(--font-serif);font-size:19px;margin-bottom:8px;}
+  .news-item p{font-size:13.5px;color:var(--ink-soft);line-height:1.8;}
+
+  /* ============ 招聘 ============ */
+  .career-hero{background:linear-gradient(135deg,#5F4730,#7A5C3E);color:#F5EFE5;padding:80px 0;text-align:center;}
+  .career-hero h1{font-family:var(--font-serif);font-size:38px;letter-spacing:2px;margin-bottom:14px;}
+  .career-hero p{color:#D9CFC0;max-width:560px;margin:0 auto;line-height:1.9;}
+  .career-cards{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:-46px;position:relative;z-index:2;}
+  .career-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:40px;text-align:center;box-shadow:var(--shadow);cursor:pointer;transition:transform .3s;}
+  .career-card:hover{transform:translateY(-6px);}
+  .career-card .icon{width:56px;height:56px;margin:0 auto 18px;border-radius:12px;background:var(--sand);display:flex;align-items:center;justify-content:center;color:var(--walnut);}
+  .career-card h3{font-family:var(--font-serif);font-size:22px;margin-bottom:10px;}
+  .career-card p{color:var(--ink-soft);font-size:14px;margin-bottom:20px;}
+  .career-card .num{font-size:12.5px;color:var(--walnut);}
+  .job-list{display:flex;flex-direction:column;gap:16px;margin-top:44px;}
+  .job-item{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:26px 30px;cursor:pointer;transition:all .25s;}
+  .job-item:hover{border-color:var(--walnut);box-shadow:var(--shadow);transform:translateY(-3px);}
+  .job-item h3{font-family:var(--font-serif);font-size:18px;margin-bottom:8px;}
+  .job-item .tags{display:flex;gap:8px;flex-wrap:wrap;}
+  .job-item .tags span{background:var(--sand);font-size:12px;padding:4px 12px;border-radius:16px;color:var(--ink-soft);}
+  .job-item .jtime{font-size:12.5px;color:var(--ink-soft);}
+
+  /* ============ 关于 / 发展历程 / 品牌介绍 ============ */
+  .about-intro{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+  .about-img{height:380px;border-radius:12px;background:linear-gradient(160deg,#E7DCC9,#C3AC87);display:flex;align-items:center;justify-content:center;font-family:var(--font-serif);color:#8E7B5F;letter-spacing:3px;}
+  .about-text h2{font-family:var(--font-serif);font-size:30px;margin-bottom:20px;}
+  .about-text p{color:var(--ink-soft);line-height:2;margin-bottom:16px;}
+  .timeline{position:relative;padding-left:34px;margin-top:20px;}
+  .timeline::before{content:'';position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line);}
+  .tl-item{position:relative;padding-bottom:34px;}
+  .tl-item::before{content:'';position:absolute;left:-30px;top:7px;width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--walnut);}
+  .tl-item .year{font-family:var(--font-serif);font-size:21px;color:var(--walnut);margin-bottom:6px;}
+  .tl-item p{color:var(--ink-soft);font-size:14px;line-height:1.8;}
+  .concept-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+  .concept-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:34px 26px;transition:transform .3s,box-shadow .3s;}
+  .concept-card:hover{transform:translateY(-6px);box-shadow:var(--shadow);}
+  .concept-card .icon{width:46px;height:46px;border-radius:10px;background:var(--sand);display:flex;align-items:center;justify-content:center;color:var(--walnut);margin-bottom:18px;}
+  .concept-card h3{font-family:var(--font-serif);font-size:17px;margin-bottom:10px;}
+  .concept-card p{font-size:13px;color:var(--ink-soft);line-height:1.9;}
+  .honor-row{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .honor-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:30px;text-align:center;transition:all .3s;}
+  .honor-card:hover{box-shadow:var(--shadow);border-color:var(--walnut);}
+  .honor-card .award{font-family:var(--font-serif);font-size:26px;color:var(--walnut);margin-bottom:10px;}
+  .honor-card h4{font-size:15px;margin-bottom:6px;}
+  .honor-card p{font-size:12.5px;color:var(--ink-soft);}
+
+  /* ============ 联系我们 ============ */
+  .contact-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:50px;align-items:start;}
+  .contact-cards{display:flex;flex-direction:column;gap:16px;}
+  .contact-card{display:flex;gap:16px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px 24px;}
+  .contact-card .icon{width:42px;height:42px;border-radius:10px;background:var(--sand);display:flex;align-items:center;justify-content:center;color:var(--walnut);flex-shrink:0;}
+  .contact-card h4{font-size:13px;color:var(--ink-soft);margin-bottom:4px;letter-spacing:1px;}
+  .contact-card p{font-size:15px;font-weight:500;}
+  .map-box{height:220px;border-radius:10px;background:linear-gradient(160deg,#E9E1D2,#D4C7AE);display:flex;align-items:center;justify-content:center;color:#8E7B5F;font-size:13px;letter-spacing:2px;border:1px dashed var(--walnut);}
+  .form-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:34px;}
+  .form-card h3{font-family:var(--font-serif);font-size:22px;margin-bottom:6px;}
+  .form-card .sub{font-size:13px;color:var(--ink-soft);margin-bottom:26px;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .field{margin-bottom:18px;}
+  .field label{display:block;font-size:13px;margin-bottom:7px;color:var(--ink);}
+  .field label i{color:#C0392B;font-style:normal;}
+  .field input,.field textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:6px;font-size:14px;font-family:inherit;background:var(--cream);transition:border .2s;outline:none;}
+  .field input:focus,.field textarea:focus{border-color:var(--walnut);background:#fff;}
+  .field textarea{min-height:120px;resize:vertical;}
+  .form-tip{font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .form-ok{display:none;background:#EEF4EC;border:1px solid #C9DCC6;color:#3E6B45;font-size:14px;padding:14px 18px;border-radius:8px;margin-bottom:18px;}
+
+  /* ============ P1 占位页 ============ */
+  .placeholder{text-align:center;padding:110px 0;}
+  .placeholder .ph-icon{width:72px;height:72px;margin:0 auto 26px;border-radius:18px;background:var(--sand);display:flex;align-items:center;justify-content:center;color:var(--walnut);}
+  .placeholder h2{font-family:var(--font-serif);font-size:28px;margin-bottom:12px;}
+  .placeholder p{color:var(--ink-soft);font-size:15px;margin-bottom:8px;}
+  .placeholder .p1note{display:inline-block;margin-top:18px;font-size:12px;color:var(--p1);border:1px solid var(--p1);border-radius:20px;padding:6px 18px;letter-spacing:1px;}
+
+  /* ============ 页脚 ============ */
+  .footer{background:var(--ink);color:#B9B0A0;padding:64px 0 30px;}
+  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px;}
+  .footer h4{color:#fff;font-size:15px;margin-bottom:18px;letter-spacing:1px;font-weight:600;}
+  .footer p{font-size:13.5px;line-height:2;}
+  .footer a{display:block;font-size:13.5px;color:#B9B0A0;margin-bottom:10px;transition:color .2s;}
+  .footer a:hover{color:#fff;}
+  .footer .logo-name{color:#fff;}
+  .footer-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:24px;display:flex;justify-content:space-between;font-size:12.5px;flex-wrap:wrap;gap:10px;}
+
+  /* ============ 移动端 ============ */
+  @media(max-width:960px){
+    .series-grid,.product-grid,.concept-grid{grid-template-columns:repeat(2,1fr);}
+    .news-grid{grid-template-columns:1fr;}
+    .career-cards{grid-template-columns:1fr;}
+    .honor-row{grid-template-columns:1fr 1fr;}
+    .detail-grid,.about-intro,.contact-grid{grid-template-columns:1fr;}
+    .footer-grid{grid-template-columns:1fr 1fr;}
+    .hero h1{font-size:38px;}
+    .form-row{grid-template-columns:1fr;}
+  }
+  @media(max-width:640px){
+    .hamburger{display:block;}
+    .header .wrap{height:64px;}
+    nav.main-nav{position:fixed;top:64px;left:0;right:0;background:#fff;flex-direction:column;align-items:stretch;padding:16px;gap:4px;box-shadow:var(--shadow);display:none;z-index:99;max-height:calc(100vh-64px);overflow:auto;}
+    nav.main-nav.open{display:flex;}
+    .nav-item{width:100%;}
+    .nav-link{justify-content:space-between;width:100%;padding:14px 12px;border-bottom:1px solid var(--sand);}
+    .dropdown{position:static;opacity:1;visibility:visible;transform:none;box-shadow:none;border:none;padding:0 0 6px 18px;min-width:0;display:none;}
+    .nav-item.open .dropdown{display:block;}
+    .header-actions{display:none;}
+    .hero{padding:80px 0 90px;}
+    .hero h1{font-size:30px;}
+    .hero-meta{flex-wrap:wrap;gap:20px;}
+    .section{padding:60px 0;}
+    .sec-title{font-size:26px;}
+    .product-grid,.series-grid,.concept-grid,.honor-row{grid-template-columns:1fr 1fr;gap:14px;}
+    .news-item{flex-direction:column;gap:12px;align-items:flex-start;}
+    .footer-grid{grid-template-columns:1fr;}
+    .topbar .wrap span.hide-m{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 顶部信息条 ===== -->
+<div class="topbar">
+  <div class="wrap">
+    <span class="hide-m">始于 1953 · 匠心国货家具品牌</span>
+    <span>咨询热线：400-888-0000</span>
+  </div>
+</div>
+
+<!-- ===== 主导航（严格按 PRD v1.4：首页/产品/新闻/招聘入口/关于我们） ===== -->
+<header class="header">
+  <div class="wrap">
+    <a class="logo" href="#" onclick="go('home');return false;">
+      <span class="logo-mark">YT</span>
+      <span><span class="logo-name">YT 家具</span><span class="logo-sub">FURNITURE</span></span>
+    </a>
+    <button class="hamburger" onclick="toggleMobile()" aria-label="菜单"><span></span><span></span><span></span></button>
+    <nav class="main-nav" id="mainNav">
+      <div class="nav-item" data-nav="home">
+        <a class="nav-link" href="#" onclick="go('home');return false;">首页</a>
+      </div>
+      <div class="nav-item" data-nav="products">
+        <a class="nav-link" href="#" onclick="go('products');return false;">产品<span class="arrow"></span></a>
+        <div class="dropdown">
+          <a href="#" onclick="go('products');return false;">产品中心</a>
+          <a href="#" onclick="go('cases');return false;">新案例展示<span class="tag-p1">P1</span></a>
+        </div>
+      </div>
+      <div class="nav-item" data-nav="news">
+        <a class="nav-link" href="#" onclick="go('news');return false;">新闻<span class="arrow"></span></a>
+        <div class="dropdown">
+          <a href="#" onclick="go('news');return false;">企业新闻<span class="tag-p1">P1</span></a>
+          <a href="#" onclick="go('news');return false;">行业资讯<span class="tag-p1">P1</span></a>
+        </div>
+      </div>
+      <div class="nav-item" data-nav="careers">
+        <a class="nav-link" href="#" onclick="go('careers');return false;">招聘入口<span class="arrow"></span></a>
+        <div class="dropdown">
+          <a href="#" onclick="go('careers-social');return false;">社会招聘</a>
+          <a href="#" onclick="go('careers-campus');return false;">校园招聘</a>
+        </div>
+      </div>
+      <div class="nav-item" data-nav="about">
+        <a class="nav-link" href="#" onclick="go('about');return false;">关于我们<span class="arrow"></span></a>
+        <div class="dropdown">
+          <a href="#" onclick="go('about');return false;">关于 YT</a>
+          <a href="#" onclick="go('milestones');return false;">发展历程</a>
+          <a href="#" onclick="go('brand');return false;">品牌介绍</a>
+          <a href="#" onclick="go('contact');return false;">联系我们</a>
+        </div>
+      </div>
+    </nav>
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="#" onclick="go('contact');return false;">在线留言</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ================= 首页 ================= -->
+<section class="page active" id="page-home">
+  <div class="hero">
+    <div class="wrap">
+      <span class="hero-eyebrow">SINCE 1953 · 现代简约国货家具</span>
+      <h1>好家具，<br>为生活留一份从容</h1>
+      <p>YT 家具集研发、制造、销售于一体，覆盖民用家具、办公家具、软体家具与全屋定制四大产品线，以人体工程学与原创设计，为千万家庭打造舒适空间。</p>
+      <div class="hero-actions">
+        <a class="btn btn-hero" href="#" onclick="go('products');return false;">浏览产品系列</a>
+        <a class="btn btn-hero-o" href="#" onclick="go('about');return false;">走进 YT</a>
+      </div>
+      <div class="hero-meta">
+        <div class="m"><b>1953</b><span>品牌创立</span></div>
+        <div class="m"><b>4 大</b><span>产品线</span></div>
+        <div class="m"><b>30 万㎡</b><span>生产基地</span></div>
+        <div class="m"><b>100+</b><span>荣誉资质</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><span class="sec-eyebrow">Product Series</span><h2 class="sec-title">产品系列</h2></div>
+        <a class="sec-more" href="#" onclick="go('products');return false;">查看全部 →</a>
+      </div>
+      <div class="series-grid">
+        <div class="series-card" onclick="go('products')">
+          <div class="series-thumb" style="--c1:#D8C9B0;--c2:#A98F6C;">云栖</div>
+          <div class="series-body"><h3>云栖 · 民用系列</h3><p>客厅 / 卧室 / 餐厅 / 书房</p></div>
+          <span class="series-count">36 款</span>
+        </div>
+        <div class="series-card" onclick="go('products')">
+          <div class="series-thumb" style="--c1:#C7D0C2;--c2:#8FA393;">简序</div>
+          <div class="series-body"><h3>简序 · 全屋定制</h3><p>衣柜 / 橱柜 / 定制柜体</p></div>
+          <span class="series-count">12 方案</span>
+        </div>
+        <div class="series-card" onclick="go('products')">
+          <div class="series-thumb" style="--c1:#E3D4C4;--c2:#C09C77;">臻眠</div>
+          <div class="series-body"><h3>臻眠 · 软体系列</h3><p>沙发 / 床垫 / 软体座椅</p></div>
+          <span class="series-count">18 款</span>
+        </div>
+        <div class="series-card" onclick="go('products')">
+          <div class="series-thumb" style="--c1:#CBD3D6;--c2:#8B9AA3;">衡宇</div>
+          <div class="series-body"><h3>衡宇 · 办公系列</h3><p>办公桌 / 会议桌 / 办公椅</p></div>
+          <span class="series-count">22 款</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section alt">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><span class="sec-eyebrow">New Arrivals</span><h2 class="sec-title">最新产品</h2></div>
+        <a class="sec-more" href="#" onclick="go('products');return false;">浏览更多 →</a>
+      </div>
+      <div class="product-grid" id="homeProducts"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><span class="sec-eyebrow">News & Updates</span><h2 class="sec-title">最新新闻</h2></div>
+        <a class="sec-more" href="#" onclick="go('news');return false;">更多新闻 →</a>
+      </div>
+      <div class="news-grid" id="homeNews"></div>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top:0;">
+    <div class="wrap" style="background:linear-gradient(135deg,#7A5C3E,#5F4730);border-radius:14px;padding:56px 48px;display:flex;justify-content:space-between;align-items:center;gap:30px;flex-wrap:wrap;color:#F5EFE5;">
+      <div>
+        <h2 class="serif" style="font-size:26px;margin-bottom:10px;">对 YT 家具感兴趣？</h2>
+        <p style="color:#D9CFC0;font-size:14.5px;">留下您的联系方式，我们的顾问将尽快与您联系。</p>
+      </div>
+      <a class="btn btn-hero" href="#" onclick="go('contact');return false;">在线留言 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 产品中心 ================= -->
+<section class="page" id="page-products">
+  <div class="page-banner"><div class="wrap">
+    <div class="breadcrumb">首页 / <b>产品中心</b></div>
+    <h1>产品中心</h1>
+    <p>四大产品线 · 按系列浏览，找到契合您家风格的产品</p>
+  </div></div>
+  <div class="section">
+    <div class="wrap">
+      <div class="filter-bar" id="productFilters">
+        <span class="filter-chip on" data-f="all">全部</span>
+        <span class="filter-chip" data-f="民用">民用家具</span>
+        <span class="filter-chip" data-f="办公">办公家具</span>
+        <span class="filter-chip" data-f="软体">软体家具</span>
+        <span class="filter-chip" data-f="定制">全屋定制</span>
+      </div>
+      <div class="product-grid" id="allProducts"></div>
+      <div class="pagination">
+        <span class="pg on">1</span><span class="pg">2</span><span class="pg">3</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 产品详情 ================= -->
+<section class="page" id="page-product-detail">
+  <div class="wrap">
+    <div class="breadcrumb" style="margin-top:30px;">产品中心 / 云栖系列 / <b>云栖 · 布艺沙发</b></div>
+    <div class="detail-grid">
+      <div class="detail-gallery">
+        <div class="main-img">产品主图 · 沙发实拍（占位）</div>
+        <div class="thumb-row">
+          <div class="t on">图1</div><div class="t">图2</div><div class="t">图3</div><div class="t">图4</div>
+        </div>
+      </div>
+      <div class="detail-info">
+        <h1 class="serif">云栖 · 布艺沙发</h1>
+        <div class="model">型号：YQ-SF-3108</div>
+        <div class="detail-tags"><span>民用 · 客厅</span><span>云栖系列</span><span>在售</span></div>
+        <p style="color:var(--ink-soft);line-height:1.9;">采用高回弹海绵与亲肤面料，人体工程学坐深设计，为客厅营造松弛有度的舒适体验。</p>
+        <div class="params">
+          <div class="row"><span class="k">尺寸</span><span class="v">3000 × 950 × 860 mm</span></div>
+          <div class="row"><span class="k">材质</span><span class="v">白蜡木框架 + 高回弹海绵 + 亚麻面料</span></div>
+          <div class="row"><span class="k">颜色</span><span class="v">云灰 / 燕麦 / 胡桃</span></div>
+          <div class="row"><span class="k">质保</span><span class="v">框架 5 年 · 面料 2 年</span></div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a class="btn btn-primary" href="#" onclick="go('contact');return false;">预约咨询</a>
+          <a class="btn btn-ghost" href="#" onclick="go('products');return false;">返回列表</a>
+        </div>
+      </div>
+    </div>
+    <div class="detail-desc" style="border-top:1px solid var(--line);">
+      <h2 class="serif">产品描述</h2>
+      <p>云栖系列以"自然、松弛"为设计语言，去繁就简的线条与现代简约的空间气质相得益彰。沙发坐深经过人体工程学测算，久坐不累；面料经耐磨测试，易打理；框架采用白蜡木实木，稳固耐用。该产品支持全屋定制联动方案，可与云栖系列电视柜、茶几配套组合。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 新案例展示（P1） ================= -->
+<section class="page" id="page-cases">
+  <div class="page-banner"><div class="wrap">
+    <div class="breadcrumb">首页 / 产品 / <b>新案例展示</b></div>
+    <h1>新案例展示</h1>
+    <p>真实客户案例 · 家的落地效果</p>
+  </div></div>
+  <div class="placeholder">
+    <div class="ph-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 18l6-7 5 5 3-3 4 4"/><circle cx="9" cy="9" r="1.6"/></svg></div>
+    <h2 class="serif">新案例展示</h2>
+    <p>该模块正在建设中，MVP 阶段暂不开放。</p>
+    <span class="p1note">P1 规划模块 · 后续迭代上线</span>
+  </div>
+</section>
+
+<!-- ================= 新闻列表 ================= -->
+<section class="page" id="page-news">
+  <div class="page-banner"><div class="wrap">
+    <div class="breadcrumb">首页 / <b>新闻资讯</b></div>
+    <h1>新闻资讯</h1>
+    <p>了解 YT 品牌动态与行业前沿</p>
+  </div></div>
+  <div class="section">
+    <div class="wrap">
+      <div class="filter-bar">
+        <span class="filter-chip on">全部</span>
+        <span class="filter-chip">企业新闻<span class="tag-p1" style="margin-left:6px;">P1</span></span>
+        <span class="filter-chip">行业资讯<span class="tag-p1" style="margin-left:6px;">P1</span></span>
+      </div>
+      <div class="news-list" id="newsList"></div>
+      <div class="pagination"><span class="pg on">1</span><span class="pg">2</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 新闻详情 ================= -->
+<section class="page" id="page-news-detail">
+  <div class="wrap" style="max-width:860px;padding:50px 24px 80px;">
+    <div class="breadcrumb">首页 / 新闻资讯 / <b>正文</b></div>
+    <h1 class="serif" style="font-size:30px;line-height:1.5;margin-bottom:14px;">YT 荣获中国家具行业年度品牌奖</h1>
+    <div style="color:var(--ink-soft);font-size:13px;margin-bottom:34px;display:flex;gap:20px;">2026-08-12 · 企业新闻 · 浏览量 328</div>
+    <div style="color:var(--ink-soft);line-height:2.2;font-size:15px;">
+      <p style="margin-bottom:18px;">近日，由中国家具协会主办的行业年度评选中，YT 家具凭借卓越的产品品质与设计创新，荣获"中国家具行业年度品牌奖"。这是 YT 连续第三年获此殊荣，充分体现了市场与行业对 YT 品牌的高度认可。</p>
+      <p style="margin-bottom:18px;">YT 家具始终坚持"以原创设计驱动产品升级"，过去一年推出云栖、简序等全新系列，覆盖民用、办公、软体与全屋定制四大产品线，持续为消费者提供高品质的家居解决方案。</p>
+      <p>未来，YT 将继续加大研发投入，深耕现代简约家居赛道，为更多家庭带来舒适、从容的生活体验。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 招聘总览 ================= -->
+<section class="page" id="page-careers">
+  <div class="career-hero">
+    <div class="wrap">
+      <h1 class="serif">加入 YT 家具</h1>
+      <p>我们相信，好的家具源于对生活有热爱的人。YT 期待与每一位志同道合的伙伴同行，共同创造美好家居。</p>
+    </div>
+  </div>
+  <div class="section">
+    <div class="wrap">
+      <div class="career-cards">
+        <div class="career-card" onclick="go('careers-social')">
+          <div class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg></div>
+          <h3 class="serif">社会招聘</h3>
+          <p>寻找志同道合的专业人才，与 YT 共同成长。</p>
+          <span class="num">当前在招 4 个职位 →</span>
+        </div>
+        <div class="career-card" onclick="go('careers-campus')">
+          <div class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 10l9-5 9 5-9 5-9-5z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></div>
+          <h3 class="serif">校园招聘</h3>
+          <p>面向应届毕业生，提供管培生与实习岗位。</p>
+          <span class="num">当前在招 3 个职位 →</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 社会招聘 ================= -->
+<section class="page" id="page-careers-social">
+  <div class="page-banner"><div class="wrap">
+    <div class="breadcrumb">首页 / 招聘入口 / <b>社会招聘</b></div>
+    <h1>社会招聘</h1>
+    <p>专业人才招募 · 简历投递：hr@yt-furniture.com</p>
+  </div></div>
+  <div class="section"><div class="wrap">
+    <div class="job-list" id="socialJobs"></div>
+  </div></div>
+</section>
+
+<!-- ================= 校园招聘 ================= -->
+<section class="page" id="page-careers-campus">
+  <div class="page-banner"><div class="wrap">
+    <div class="breadcrumb">首页 / 招聘入口 / <b>校园招聘</b></div>
+    <h1>校园招聘</h1>
+    <p>应届生招募 · 简历投递：campus@yt-furniture.com</p>
+  </div></div>
+  <div class="section"><div class="wrap">
+    <div class="job-list" id="campusJobs"></div>
+  </div></div>
+</section>
+
+<!-- ================= 职位详情 ================= -->
+<section class="page" id="page-job-detail">
+  <div class="wrap" style="max-width:900px;padding:44px 24px 80px;">
+    <div class="breadcrumb">首页 / 招聘入口 / 社会招聘 / <b id="jdType">职位详情</b></div>
+    <h1 class="serif" id="jdTitle" style="font-size:30px;margin-bottom:8px;">区域销售经理</h1>
+    <div class="detail-tags" id="jdTags" style="margin-bottom:28px;"><span>社会招聘</span><span>销售中心</span><span>杭州</span><span>2 人</span></div>
+    <div style="background:#fff;border:1px solid var(--line);border-radius:12px;padding:34px;">
+      <h3 class="serif" style="font-size:18px;margin-bottom:14px;">职位描述</h3>
+      <p id="jdDesc" style="color:var(--ink-soft);line-height:2;margin-bottom:26px;">负责华东区域经销渠道的开发与维护，制定区域销售计划，达成销售目标；组织区域内市场活动，提升 YT 品牌知名度。</p>
+      <h3 class="serif" style="font-size:18px;margin-bottom:14px;">任职要求</h3>
+      <p id="jdReq" style="color:var(--ink-soft);line-height:2;">1. 大专及以上学历，3 年以上家具 / 建材行业销售经验；2. 具备良好的渠道拓展能力与谈判能力；3. 能适应出差。</p>
+      <div style="margin-top:30px;padding-top:24px;border-top:1px solid var(--line);">
+        <p style="font-size:13.5px;color:var(--ink-soft);margin-bottom:6px;">投递方式：请将简历发送至 <b style="color:var(--walnut);">hr@yt-furniture.com</b>，邮件标题注明应聘职位。</p>
+        <p style="font-size:13.5px;color:var(--ink-soft);">咨询电话：0571-8888 0000</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 关于 YT ================= -->
+<section class="page" id="page-about">
+  <div class="page-banner"><div class="wrap">
+    <div class="breadcrumb">首页 / 关于我们 / <b>关于 YT</b></div>
+    <h1>关于 YT</h1>
+    <p>匠心七十载 · 为现代生活而设计</p>
+  </div></div>
+  <div class="section"><div class="wrap">
+    <div class="about-intro">
+      <div class="about-img">YT 品牌形象（占位）</div>
+      <div class="about-text">
+        <h2 class="serif">集研发、制造、销售于一体的大型现代化家具企业</h2>
+        <p>YT 家具始建于 1953 年，是一家集研发、制造、销售于一体的大型现代化家具企业。公司现有厂区 30 万平方米，拥有多条智能化家具生产线，全面推行精益化管理，环保水平处于行业先进之列。</p>
+        <p>先后荣获中国驰名商标、国家质量奖等上百项荣誉，深受广大新老顾客的认可。我们坚持"人体工程学"与"原创设计"并重，让每一件 YT 家具都经得起时间与生活的检验。</p>
+        <a class="btn btn-primary" href="#" onclick="go('milestones');return false;">查看发展历程</a>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ================= 发展历程 ================= -->
+<section class="page" id="page-milestones">
+  <div class="page-banner"><div class="wrap">
+    <div class="breadcrumb">首页 / 关于我们 / <b>发展历程</b></div>
+    <h1>发展历程</h1>
+    <p>每一步，都算数</p>
+  </div></div>
+  <div class="section"><div class="wrap" style="max-width:760px;">
+    <div class="timeline">
+      <div class="tl-item"><div class="year">1953</div><p>YT 家具前身成立，开启匠心家具之路。</p></div>
+      <div class="tl-item"><div class="year">1988</div><p>率先引入机械化生产线，产能大幅提升。</p></div>
+      <div class="tl-item"><div class="year">2005</div><p>荣获"中国驰名商标"，品牌影响力走向全国。</p></div>
+      <div class="tl-item"><div class="year">2015</div><p>建成 30 万㎡现代化生产基地，布局全屋定制。</p></div>
+      <div class="tl-item"><div class="year">2023</div><p>推出云栖、简序等新系列，品牌焕新升级。</p></div>
+      <div class="tl-item"><div class="year">2026</div><p>官网全新上线，与更多家庭分享从容生活。</p></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ================= 品牌介绍 ================= -->
+<section class="page" id="page-brand">
+  <div class="page-banner"><div class="wrap">
+    <div class="breadcrumb">首页 / 关于我们 / <b>品牌介绍</b></div>
+    <h1>品牌介绍</h1>
+    <p>设计理念 · 荣誉资质</p>
+  </div></div>
+  <div class="section"><div class="wrap">
+    <div class="sec-head"><div><span class="sec-eyebrow">Design Philosophy</span><h2 class="sec-title">设计理念</h2></div></div>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg></div>
+        <h3 class="serif">人体工程学</h3><p>每一处弧度与坐深均经过科学测算，久居不倦。</p>
+      </div>
+      <div class="concept-card">
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.5 5.5L20 9l-4.5 4 1.5 6L12 16l-5 3 1.5-6L4 9l5.5-.5L12 3z"/></svg></div>
+        <h3 class="serif">原创设计</h3><p>去繁就简的现代美学，为空间注入从容气质。</p>
+      </div>
+      <div class="concept-card">
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg></div>
+        <h3 class="serif">智能智造</h3><p>智能化生产线与信息化管理，品质稳定如一。</p>
+      </div>
+      <div class="concept-card">
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0112 6a5.5 5.5 0 019.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg></div>
+        <h3 class="serif">贴心售后</h3><p>全国服务网络，质保承诺让您买得放心、用得安心。</p>
+      </div>
+    </div>
+    <div class="sec-head" style="margin-top:70px;"><div><span class="sec-eyebrow">Honors</span><h2 class="sec-title">荣誉资质</h2></div></div>
+    <div class="honor-row">
+      <div class="honor-card"><div class="award"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="9" r="5"/><path d="M9 13.5L8 21l4-2 4 2-1-7.5"/></svg></div><h4>中国驰名商标</h4><p>国家工商总局认定</p></div>
+      <div class="honor-card"><div class="award"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.5 5.5L20 9l-4.5 4 1.5 6L12 16l-5 3 1.5-6L4 9l5.5-.5L12 3z"/></svg></div><h4>国家质量奖</h4><p>行业质量标杆</p></div>
+      <div class="honor-card"><div class="award"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12l4 4L19 6"/><circle cx="12" cy="12" r="9"/></svg></div><h4>中国环境标志认证</h4><p>绿色环保产品认证</p></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ================= 联系我们 ================= -->
+<section class="page" id="page-contact">
+  <div class="page-banner"><div class="wrap">
+    <div class="breadcrumb">首页 / 关于我们 / <b>联系我们</b></div>
+    <h1>联系我们</h1>
+    <p>期待与您沟通，共同打造理想之家</p>
+  </div></div>
+  <div class="section"><div class="wrap">
+    <div class="contact-grid">
+      <div>
+        <div class="contact-cards">
+          <div class="contact-card">
+            <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0112 6a5.5 5.5 0 019.5 6c-2.5 4.5-9.5 9-9.5 9z"/><circle cx="12" cy="11" r="2.5"/></svg></div>
+            <div><h4>公司地址</h4><p>浙江省杭州市余杭区 YT 家具产业园</p></div>
+          </div>
+          <div class="contact-card">
+            <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h16v14H4z"/><path d="M4 6l8 7 8-7"/></svg></div>
+            <div><h4>联系电话</h4><p>400-888-0000（9:00-18:00）</p></div>
+          </div>
+          <div class="contact-card">
+            <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div>
+            <div><h4>邮箱</h4><p>service@yt-furniture.com</p></div>
+          </div>
+          <div class="contact-card">
+            <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+            <div><h4>营业时间</h4><p>周一至周日 9:00-18:00</p></div>
+          </div>
+        </div>
+        <div class="map-box" style="margin-top:18px;">地图组件占位（高德 / 腾讯地图，P1 接入）</div>
+      </div>
+      <div class="form-card">
+        <div class="form-ok" id="formOk">提交成功！我们将尽快与您联系。</div>
+        <h3 class="serif">在线留言</h3>
+        <p class="sub">请留下您的联系方式，我们的顾问会在 1 个工作日内与您联系。</p>
+        <div class="form-row">
+          <div class="field"><label>姓名 <i>*</i></label><input type="text" placeholder="请输入您的姓名"></div>
+          <div class="field"><label>联系电话 <i>*</i></label><input type="tel" placeholder="请输入手机号"></div>
+        </div>
+        <div class="field"><label>留言内容 <i>*</i></label><textarea placeholder="想咨询的产品、预算或需求…"></textarea></div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitForm()">提交留言</button>
+        <p class="form-tip">* 必填项 · 提交后 60 秒内仅可提交一次（防刷）</p>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+</main>
+
+<!-- ===== 页脚 ===== -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="logo" style="margin-bottom:16px;"><span class="logo-mark">YT</span><span><span class="logo-name">YT 家具</span><span class="logo-sub" style="color:#8E8577;">FURNITURE</span></span></div>
+        <p>始于 1953 · 集研发、制造、销售于一体的现代化家具企业，为千万家庭打造从容生活。</p>
+      </div>
+      <div>
+        <h4>产品</h4>
+        <a href="#" onclick="go('products');return false;">民用家具</a>
+        <a href="#" onclick="go('products');return false;">全屋定制</a>
+        <a href="#" onclick="go('products');return false;">软体家具</a>
+        <a href="#" onclick="go('products');return false;">办公家具</a>
+      </div>
+      <div>
+        <h4>关于</h4>
+        <a href="#" onclick="go('about');return false;">关于 YT</a>
+        <a href="#" onclick="go('milestones');return false;">发展历程</a>
+        <a href="#" onclick="go('brand');return false;">品牌介绍</a>
+        <a href="#" onclick="go('careers');return false;">加入我们</a>
+      </div>
+      <div>
+        <h4>联系</h4>
+        <p>400-888-0000</p>
+        <p>service@yt-furniture.com</p>
+        <p>杭州市余杭区 YT 家具产业园</p>
+        <a href="#" onclick="go('contact');return false;">在线留言 →</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 YT 家具 YT-Furniture Co., Ltd. 保留所有权利</span>
+      <span>浙ICP备XXXXXXXX号 · 本页为产品原型，非正式上线页面</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============ 数据（原型示例内容） ============ */
+const PRODUCTS = [
+  {name:'云栖 · 布艺沙发',model:'YQ-SF-3108',cat:'民用',series:'云栖',badge:'热卖'},
+  {name:'云栖 · 实木床',model:'YQ-BD-2201',cat:'民用',series:'云栖'},
+  {name:'云栖 · 电视柜',model:'YQ-TV-1180',cat:'民用',series:'云栖'},
+  {name:'简序 · 定制衣柜',model:'JX-GW-C01',cat:'定制',series:'简序',badge:'新品'},
+  {name:'简序 · 整体橱柜',model:'JX-KT-C03',cat:'定制',series:'简序'},
+  {name:'臻眠 · 乳胶床垫',model:'ZM-MT-902',cat:'软体',series:'臻眠'},
+  {name:'臻眠 · 单人休闲椅',model:'ZM-CH-410',cat:'软体',series:'臻眠'},
+  {name:'衡宇 · 老板桌',model:'HY-DK-6600',cat:'办公',series:'衡宇'},
+  {name:'衡宇 · 人体工学椅',model:'HY-CH-5500',cat:'办公',series:'衡宇'},
+  {name:'衡宇 · 会议桌',model:'HY-CT-8800',cat:'办公',series:'衡宇'},
+  {name:'云栖 · 餐桌椅',model:'YQ-DN-4306',cat:'民用',series:'云栖'},
+  {name:'简序 · 书房定制',model:'JX-ST-C05',cat:'定制',series:'简序'}
+];
+const NEWS = [
+  {date:'08.12',ym:'2026-08',title:'YT 荣获中国家具行业年度品牌奖',summary:'连续第三年获此殊荣，产品品质与设计创新再获行业认可。'},
+  {date:'07.28',ym:'2026-07',title:'YT 云栖系列新品发布会圆满举行',summary:'以"自然、松弛"为设计语言，发布客厅与卧室系列新品。'},
+  {date:'06.15',ym:'2026-06',title:'YT 智能制造基地开放日：见证一块好木头的旅程',summary:'邀请用户走进工厂，体验从原木到成品的全流程匠心工艺。'}
+];
+const SOCIAL_JOBS = [
+  {title:'区域销售经理',dept:'销售中心',loc:'杭州',count:'2 人',time:'2026-08-10',type:'社会招聘'},
+  {title:'家具产品设计师',dept:'设计研发中心',loc:'杭州',count:'1 人',time:'2026-08-05',type:'社会招聘'},
+  {title:'电商运营专员',dept:'电商事业部',loc:'杭州',count:'2 人',time:'2026-07-28',type:'社会招聘'},
+  {title:'质量管理工程师',dept:'质量管理部',loc:'生产基地',count:'1 人',time:'2026-07-20',type:'社会招聘'}
+];
+const CAMPUS_JOBS = [
+  {title:'管理培训生（供应链方向）',dept:'供应链中心',loc:'杭州',count:'5 人',time:'2026-08-12',type:'校园招聘'},
+  {title:'管理培训生（营销方向）',dept:'营销中心',loc:'杭州',count:'5 人',time:'2026-08-12',type:'校园招聘'},
+  {title:'设计实习生',dept:'设计研发中心',loc:'杭州',count:'3 人',time:'2026-08-08',type:'校园招聘'}
+];
+
+/* ============ 页面路由 ============ */
+const NAV_MAP = {home:'home',products:'products',cases:'cases',news:'news',careers:'careers','careers-social':'careers-social','careers-campus':'careers-campus',about:'about',milestones:'milestones',brand:'brand',contact:'contact'};
+function go(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const navKey = NAV_MAP[page] || 'home';
+  const el = document.querySelector('.nav-item[data-nav="'+navKey+'"]');
+  if(el) el.classList.add('active');
+  document.getElementById('mainNav').classList.remove('open');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ============ 渲染 ============ */
+function renderProducts(){
+  const grid = document.getElementById('allProducts') || document.getElementById('homeProducts');
+  if(!grid) return;
+  grid.innerHTML = PRODUCTS.map((p,i)=>`
+    <div class="product-card" onclick="go('product-detail')">
+      <div class="p-thumb"><span class="ph">${p.series} · 产品图</span>${p.badge?'<span class="badge">'+p.badge+'</span>':''}</div>
+      <div class="p-info"><h3>${p.name}</h3><div class="model">${p.model}</div><div class="meta"><span>${p.series}系列</span><span>${p.cat}</span></div></div>
+    </div>`).join('');
+}
+function renderNews(){
+  const el = document.getElementById('homeNews') || document.getElementById('newsList');
+  if(!el) return;
+  const items = NEWS.map(n=>`
+    <div class="news-card" onclick="go('news-detail')">
+      <span class="news-date">${n.ym} · ${n.date}</span>
+      <h3>${n.title}</h3><p>${n.summary}</p>
+      <span class="news-more">阅读全文 →</span>
+    </div>`).join('');
+  el.innerHTML = (el.id==='newsList') ? NEWS.map(n=>`
+    <div class="news-item" onclick="go('news-detail')">
+      <div class="nd"><div class="day">${n.date.split('.')[1]}</div><div class="month">${n.ym}</div></div>
+      <div><h3>${n.title}</h3><p>${n.summary}</p></div>
+    </div>`).join('') : items;
+}
+function renderJobs(){
+  const s = document.getElementById('socialJobs'); if(s) s.innerHTML = jobHTML(SOCIAL_JOBS);
+  const c = document.getElementById('campusJobs'); if(c) c.innerHTML = jobHTML(CAMPUS_JOBS);
+}
+function jobHTML(list){
+  return list.map(j=>`
+    <div class="job-item" onclick="go('job-detail')">
+      <div><h3>${j.title}</h3>
+        <div class="tags"><span>${j.type}</span><span>${j.dept}</span><span>${j.loc}</span><span>招聘 ${j.count}</span></div>
+      </div>
+      <div class="jtime">发布于 ${j.time}</div>
+    </div>`).join('');
+}
+
+/* 产品筛选 */
+document.addEventListener('click',e=>{
+  const chip = e.target.closest('.filter-chip');
+  if(chip && chip.closest('#productFilters')){
+    document.querySelectorAll('#productFilters .filter-chip').forEach(c=>c.classList.remove('on'));
+    chip.classList.add('on');
+    const f = chip.dataset.f;
+    const grid = document.getElementById('allProducts');
+    if(grid) grid.innerHTML = PRODUCTS.filter(p=>f==='all'||p.cat===f).map(p=>`
+      <div class="product-card" onclick="go('product-detail')">
+        <div class="p-thumb"><span class="ph">${p.series} · 产品图</span>${p.badge?'<span class="badge">'+p.badge+'</span>':''}</div>
+        <div class="p-info"><h3>${p.name}</h3><div class="model">${p.model}</div><div class="meta"><span>${p.series}系列</span><span>${p.cat}</span></div></div>
+      </div>`).join('');
+  }
+});
+
+/* 留言表单（原型演示） */
+function submitForm(){
+  document.getElementById('formOk').style.display='block';
+  setTimeout(()=>document.getElementById('formOk').style.display='none',4000);
+}
+
+/* 移动端 */
+function toggleMobile(){
+  document.getElementById('mainNav').classList.toggle('open');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('open'));
+}
+
+/* 初始化 */
+renderProducts();renderNews();renderJobs();
+</script>
+</body>
+</html>

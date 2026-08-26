@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YT 家具官网 · 后台管理系统原型（PRD v1.2）</title>
+<style>
+  :root{
+    --walnut:#7A5C3E;--walnut-dark:#5F4730;
+    --ink:#2B2520;--ink-soft:#6E675E;
+    --cream:#FAF7F1;--sand:#F0EAE1;--line:#E5DCCE;
+    --white:#fff;--red:#C0392B;--green:#3E6B45;
+    --shadow:0 6px 24px rgba(43,37,32,.08);
+    --radius:6px;
+    --font-sans:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+    --font-serif:'Noto Serif SC','Songti SC','SimSun',serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:var(--font-sans);color:var(--ink);background:#F4F1EC;font-size:14px;line-height:1.6;}
+  a{text-decoration:none;color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+
+  /* ============ 登录页 ============ */
+  .login-wrap{position:fixed;inset:0;background:linear-gradient(135deg,#8A6A47,#57422E);display:flex;align-items:center;justify-content:center;z-index:200;}
+  .login-card{background:#fff;border-radius:14px;padding:44px 42px;width:400px;box-shadow:0 20px 60px rgba(0,0,0,.35);}
+  .login-logo{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:8px;}
+  .login-logo .mark{width:44px;height:44px;background:var(--walnut);color:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--font-serif);font-weight:700;font-size:20px;}
+  .login-logo .t{font-family:var(--font-serif);font-size:20px;font-weight:700;letter-spacing:3px;}
+  .login-sub{text-align:center;font-size:12.5px;color:var(--ink-soft);margin-bottom:30px;letter-spacing:2px;}
+  .login-card .field{margin-bottom:18px;}
+  .login-card label{display:block;font-size:13px;margin-bottom:7px;}
+  .login-card input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:6px;font-size:14px;outline:none;background:var(--cream);}
+  .login-card input:focus{border-color:var(--walnut);background:#fff;}
+  .role-demo{margin-bottom:20px;}
+  .role-demo .rd-label{font-size:12.5px;color:var(--ink-soft);margin-bottom:8px;}
+  .role-demo .roles{display:flex;gap:8px;}
+  .role-demo .r{flex:1;text-align:center;padding:9px 6px;border:1px solid var(--line);border-radius:6px;font-size:12.5px;cursor:pointer;transition:all .2s;background:var(--cream);}
+  .role-demo .r.on{background:var(--walnut);color:#fff;border-color:var(--walnut);}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:var(--radius);font-size:14px;font-weight:600;border:none;transition:all .2s;}
+  .btn-primary{background:var(--walnut);color:#fff;width:100%;}
+  .btn-primary:hover{background:var(--walnut-dark);}
+  .btn-default{background:#fff;border:1px solid var(--line);color:var(--ink);}
+  .btn-default:hover{border-color:var(--walnut);color:var(--walnut);}
+  .btn-danger{background:#fff;border:1px solid var(--red);color:var(--red);}
+  .btn-danger:hover{background:var(--red);color:#fff;}
+  .btn-sm{padding:5px 12px;font-size:12.5px;border-radius:4px;}
+  .login-tip{margin-top:16px;font-size:12px;color:var(--ink-soft);text-align:center;line-height:1.8;}
+
+  /* ============ 后台布局 ============ */
+  .admin{display:none;min-height:100vh;}
+  .admin.show{display:flex;}
+  .page{display:none;}
+  .sidebar{width:220px;background:var(--ink);color:#CFC7B8;flex-shrink:0;display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:50;}
+  .side-logo{display:flex;align-items:center;gap:10px;padding:20px 18px;border-bottom:1px solid rgba(255,255,255,.1);}
+  .side-logo .mark{width:34px;height:34px;background:var(--walnut);color:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:var(--font-serif);font-weight:700;font-size:15px;}
+  .side-logo .t{font-family:var(--font-serif);color:#fff;font-size:15px;letter-spacing:2px;font-weight:600;}
+  .side-logo .s{font-size:10px;color:#8E8577;letter-spacing:2px;display:block;}
+  .side-menu{flex:1;overflow:auto;padding:12px 10px;}
+  .menu-group{font-size:11px;color:#8E8577;letter-spacing:2px;padding:14px 10px 6px;}
+  .menu-item{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:6px;font-size:13.5px;cursor:pointer;transition:all .2s;color:#CFC7B8;}
+  .menu-item:hover{background:rgba(255,255,255,.08);color:#fff;}
+  .menu-item.on{background:var(--walnut);color:#fff;font-weight:600;}
+  .menu-item svg{flex-shrink:0;opacity:.85;}
+  .menu-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10.5px;border-radius:10px;padding:1px 7px;}
+  .side-foot{padding:16px;border-top:1px solid rgba(255,255,255,.1);font-size:11.5px;color:#8E8577;}
+
+  .main{flex:1;margin-left:220px;min-height:100vh;display:flex;flex-direction:column;}
+  .topbar{background:#fff;border-bottom:1px solid var(--line);padding:0 26px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+  .crumbs{font-size:13.5px;color:var(--ink-soft);}
+  .crumbs b{color:var(--ink);font-weight:600;}
+  .user-box{display:flex;align-items:center;gap:12px;}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--walnut);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;}
+  .user-name{font-size:13.5px;font-weight:600;}
+  .user-role{font-size:11px;color:var(--ink-soft);}
+  .user-menu{position:relative;}
+  .user-menu .drop{position:absolute;right:0;top:42px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);min-width:150px;padding:6px;display:none;}
+  .user-menu:hover .drop{display:block;}
+  .user-menu .drop a{display:block;padding:9px 14px;border-radius:4px;font-size:13px;}
+  .user-menu .drop a:hover{background:var(--sand);color:var(--walnut);}
+  .content{padding:26px;flex:1;}
+
+  /* ============ 通用组件 ============ */
+  .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px 24px;margin-bottom:20px;}
+  .card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+  .card-head h3{font-size:16px;font-weight:600;}
+  .card-head .sub{font-size:12px;color:var(--ink-soft);}
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:20px;}
+  .stat-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px 24px;}
+  .stat-card .label{font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;}
+  .stat-card .num{font-family:var(--font-serif);font-size:30px;font-weight:600;color:var(--walnut);}
+  .stat-card .delta{font-size:12px;color:var(--green);margin-top:6px;}
+  .stat-card .delta.down{color:var(--red);}
+
+  table.tbl{width:100%;border-collapse:collapse;}
+  table.tbl th{text-align:left;font-size:12.5px;color:var(--ink-soft);font-weight:500;padding:11px 12px;border-bottom:1px solid var(--line);background:#FBFAF7;white-space:nowrap;}
+  table.tbl td{padding:12px;border-bottom:1px solid #F0ECE4;font-size:13.5px;vertical-align:middle;}
+  table.tbl tr:hover td{background:#FDFBF7;}
+  .t-thumb{width:52px;height:52px;border-radius:6px;background:linear-gradient(160deg,#E7DCC9,#C3AC87);display:flex;align-items:center;justify-content:center;font-size:9px;color:#8E7B5F;letter-spacing:1px;}
+  .op-links{display:flex;gap:10px;font-size:13px;white-space:nowrap;}
+  .op-links a{color:var(--walnut);}
+  .op-links a.danger{color:var(--red);}
+  .op-links a:hover{text-decoration:underline;}
+  .status{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:3px 12px;border-radius:20px;}
+  .status.on{background:#EDF3EC;color:var(--green);}
+  .status.off{background:#F6EBEA;color:var(--red);}
+  .status.new{background:#FDF3E3;color:#B0762A;}
+  .status.contacted{background:#EDF3EC;color:var(--green);}
+  .status.done{background:#F0EDE8;color:var(--ink-soft);}
+  .tag{display:inline-block;font-size:11px;padding:2px 9px;border-radius:3px;background:var(--sand);color:var(--ink-soft);margin-right:6px;}
+  .tag.p1{background:#FDF3E3;color:#B0762A;border:1px solid #E8C98F;}
+  .filter-bar{display:flex;gap:10px;margin-bottom:18px;align-items:center;flex-wrap:wrap;}
+  .filter-bar input,.filter-bar select{padding:8px 12px;border:1px solid var(--line);border-radius:6px;font-size:13px;background:#fff;outline:none;min-width:160px;}
+  .filter-bar input:focus,.filter-bar select:focus{border-color:var(--walnut);}
+  .pagination{display:flex;justify-content:flex-end;gap:6px;margin-top:16px;}
+  .pg{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:5px;font-size:13px;background:#fff;cursor:pointer;}
+  .pg.on{background:var(--walnut);color:#fff;border-color:var(--walnut);}
+
+  /* 弹窗 */
+  .modal-mask{position:fixed;inset:0;background:rgba(43,37,32,.45);z-index:100;display:none;align-items:center;justify-content:center;}
+  .modal-mask.show{display:flex;}
+  .modal{background:#fff;border-radius:12px;width:640px;max-width:92vw;max-height:88vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--line);}
+  .modal-head h3{font-size:16px;font-weight:600;}
+  .modal-head .x{background:none;border:none;font-size:20px;color:var(--ink-soft);cursor:pointer;}
+  .modal-body{padding:24px;}
+  .modal-foot{padding:16px 24px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;}
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;margin-bottom:4px;}
+  .field{margin-bottom:16px;}
+  .field.full{grid-column:1/-1;}
+  .field label{display:block;font-size:13px;margin-bottom:7px;}
+  .field label i{color:var(--red);font-style:normal;}
+  .field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;font-size:13.5px;background:var(--cream);outline:none;font-family:inherit;}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--walnut);background:#fff;}
+  .field textarea{min-height:90px;resize:vertical;}
+  .upload-box{border:1px dashed var(--walnut);border-radius:8px;padding:22px;text-align:center;color:var(--walnut);font-size:13px;cursor:pointer;background:#FDFBF7;}
+  .upload-box:hover{background:var(--sand);}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;}
+  .chips span{border:1px solid var(--line);padding:6px 14px;border-radius:20px;font-size:12.5px;cursor:pointer;}
+  .chips span.on{background:var(--walnut);color:#fff;border-color:var(--walnut);}
+  .tab-bar{display:flex;border-bottom:1px solid var(--line);margin-bottom:20px;gap:4px;}
+  .tab-bar .tb{padding:10px 20px;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;color:var(--ink-soft);}
+  .tab-bar .tb.on{color:var(--walnut);border-bottom-color:var(--walnut);font-weight:600;}
+
+  /* 图表（SVG 手绘） */
+  .chart-box{position:relative;}
+  .chart-legend{display:flex;gap:18px;font-size:12px;color:var(--ink-soft);margin-bottom:12px;}
+  .chart-legend .dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;}
+
+  /* 角色权限 */
+  .role-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:22px;}
+  .role-card{border:1px solid var(--line);border-radius:10px;padding:22px;background:#fff;}
+  .role-card h4{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+  .role-card .rc{font-size:11px;background:var(--sand);padding:2px 8px;border-radius:4px;color:var(--ink-soft);}
+  .role-card p{font-size:12.5px;color:var(--ink-soft);margin-bottom:12px;}
+  .role-card .perm{font-size:11.5px;color:var(--walnut);line-height:2;}
+  .perm-matrix td,.perm-matrix th{text-align:center;}
+  .perm-matrix td:first-child,.perm-matrix th:first-child{text-align:left;}
+  .perm-matrix .ok{color:var(--green);font-weight:700;}
+  .perm-matrix .no{color:#D5CFC4;}
+
+  /* 留言详情 */
+  .msg-detail p{font-size:13.5px;line-height:2;color:var(--ink-soft);}
+
+  /* 提示条 */
+  .toast{position:fixed;top:70px;right:26px;background:var(--ink);color:#fff;padding:12px 20px;border-radius:8px;font-size:13.5px;z-index:300;display:none;box-shadow:var(--shadow);}
+  .toast.show{display:block;animation:fadeIn .3s;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:none;}}
+
+  @media(max-width:900px){
+    .sidebar{width:64px;}
+    .side-logo .t,.side-logo .s,.menu-item span,.menu-group,.side-foot{display:none;}
+    .menu-item{justify-content:center;padding:13px 0;}
+    .main{margin-left:64px;}
+    .stat-row{grid-template-columns:repeat(2,1fr);}
+    .role-cards{grid-template-columns:1fr;}
+    .frow{grid-template-columns:1fr;}
+    .content{padding:16px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ 登录页 ============ -->
+<div class="login-wrap" id="loginView">
+  <div class="login-card">
+    <div class="login-logo"><span class="mark">YT</span><span class="t">YT 家具 · 后台管理</span></div>
+    <div class="login-sub">CONTENT MANAGEMENT SYSTEM</div>
+    <div class="field"><label>用户名</label><input id="loginUser" type="text" value="sysadmin"></div>
+    <div class="field"><label>密码</label><input id="loginPass" type="password" value="********"></div>
+    <div class="role-demo">
+      <div class="rd-label">原型演示 · 选择登录角色（验证 RBAC 菜单权限）</div>
+      <div class="roles">
+        <div class="r on" data-role="system" onclick="pickRole(this)">系统管理员</div>
+        <div class="r" data-role="editor" onclick="pickRole(this)">内容编辑</div>
+        <div class="r" data-role="service" onclick="pickRole(this)">客服</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="doLogin()">登 录</button>
+    <div class="login-tip">初始 sysadmin 用户 · 密码由部署文档说明并要求首次登录修改（PRD G-04）<br>JWT 令牌有效期 24h（PRD G-03）</div>
+  </div>
+</div>
+
+<!-- ============ 后台主界面 ============ -->
+<div class="admin" id="adminView">
+  <!-- 侧边栏 -->
+  <aside class="sidebar">
+    <div class="side-logo"><span class="mark">YT</span><span><span class="t">YT 家具</span><span class="s">后台管理系统</span></span></div>
+    <nav class="side-menu" id="sideMenu">
+      <div class="menu-group">总览</div>
+      <div class="menu-item" data-page="dashboard" data-perm="stats" onclick="go('dashboard')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="11" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/></svg>
+        <span>工作台</span>
+      </div>
+      <div class="menu-group">内容管理</div>
+      <div class="menu-item" data-page="products" data-perm="product" onclick="go('products')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8l8-4 8 4v8l-8 4-8-4V8z"/><path d="M4 8l8 4 8-4M12 12v8"/></svg>
+        <span>产品管理</span>
+      </div>
+      <div class="menu-item" data-page="news" data-perm="news" onclick="go('news')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        <span>新闻管理</span>
+      </div>
+      <div class="menu-item" data-page="banners" data-perm="banner" onclick="go('banners')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 18l6-7 5 5 3-3 4 4"/><circle cx="9" cy="10" r="1.4"/></svg>
+        <span>轮播图管理</span>
+      </div>
+      <div class="menu-item" data-page="company" data-perm="company" onclick="go('company')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg>
+        <span>公司介绍</span>
+      </div>
+      <div class="menu-item" data-page="jobs" data-perm="job" onclick="go('jobs')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2"/><path d="M3 12h18"/></svg>
+        <span>职位管理</span>
+      </div>
+      <div class="menu-group">客户线索</div>
+      <div class="menu-item" data-page="messages" data-perm="message" onclick="go('messages')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h16v12H8l-4 3V5z"/><path d="M8 10h8M8 13h5"/></svg>
+        <span>留言线索</span><span class="menu-badge" id="msgBadge" style="display:none;">3</span>
+      </div>
+      <div class="menu-group">系统管理</div>
+      <div class="menu-item" data-page="users" data-perm="user" onclick="go('users')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6"/><path d="M17 5v6M14 8h6"/></svg>
+        <span>用户管理</span>
+      </div>
+      <div class="menu-item" data-page="roles" data-perm="role" onclick="go('roles')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>
+        <span>角色与权限</span>
+      </div>
+    </nav>
+    <div class="side-foot">YT CMS · v1.2 原型</div>
+  </aside>
+
+  <!-- 主区域 -->
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs" id="crumbs">工作台</div>
+      <div class="user-box">
+        <div class="user-menu">
+          <div style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+            <span class="avatar" id="curAvatar">A</span>
+            <div><div class="user-name" id="curName">系统管理员</div><div class="user-role" id="curRole">system</div></div>
+          </div>
+          <div class="drop">
+            <a href="#" onclick="openModal('pwdModal');return false;">修改密码</a>
+            <a href="#" onclick="doLogout();return false;">退出登录</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+
+      <!-- ===== 工作台 ===== -->
+      <div class="page" id="page-dashboard">
+        <div class="stat-row">
+          <div class="stat-card"><div class="label">总访问量</div><div class="num">128,640</div><div class="delta">较上周 +12.4%</div></div>
+          <div class="stat-card"><div class="label">今日访问量</div><div class="num">1,286</div><div class="delta">较昨日 +8.1%</div></div>
+          <div class="stat-card"><div class="label">留言总量</div><div class="num">64</div><div class="delta">新增 3 条待处理</div></div>
+          <div class="stat-card"><div class="label">在售产品</div><div class="num">34</div><div class="delta">4 大品类在售</div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>近 7 日访问趋势</h3><span class="sub">口径：前台页面访问打点，管理端自身访问不计数（PRD J-04）</span></div>
+          <div class="chart-legend"><span><span class="dot" style="background:#7A5C3E;"></span>访问量</span></div>
+          <svg viewBox="0 0 860 220" style="width:100%;height:auto;">
+            <line x1="40" y1="190" x2="840" y2="190" stroke="#E5DCCE"/>
+            <line x1="40" y1="130" x2="840" y2="130" stroke="#F0ECE4" stroke-dasharray="4 4"/>
+            <line x1="40" y1="70" x2="840" y2="70" stroke="#F0ECE4" stroke-dasharray="4 4"/>
+            <line x1="40" y1="10" x2="840" y2="10" stroke="#F0ECE4" stroke-dasharray="4 4"/>
+            <polyline points="60,150 170,140 280,158 390,110 500,120 610,78 720,88" fill="none" stroke="#7A5C3E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <g fill="#7A5C3E">
+              <circle cx="60" cy="150" r="4"/><circle cx="170" cy="140" r="4"/><circle cx="280" cy="158" r="4"/><circle cx="390" cy="110" r="4"/><circle cx="500" cy="120" r="4"/><circle cx="610" cy="78" r="4"/><circle cx="720" cy="88" r="4"/>
+            </g>
+            <g fill="#6E675E" font-size="11" text-anchor="middle">
+              <text x="60" y="208">08-18</text><text x="170" y="208">08-19</text><text x="280" y="208">08-20</text><text x="390" y="208">08-21</text><text x="500" y="208">08-22</text><text x="610" y="208">08-23</text><text x="720" y="208">08-24</text>
+            </g>
+            <g fill="#7A5C3E" font-size="11">
+              <text x="60" y="142" text-anchor="middle">860</text><text x="170" y="132" text-anchor="middle">920</text><text x="280" y="150" text-anchor="middle">840</text><text x="390" y="102" text-anchor="middle">1120</text><text x="500" y="112" text-anchor="middle">1080</text><text x="610" y="70" text-anchor="middle">1360</text><text x="720" y="80" text-anchor="middle">1290</text>
+            </g>
+          </svg>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div class="card">
+            <div class="card-head"><h3>浏览量 Top 10 产品</h3></div>
+            <table class="tbl"><thead><tr><th>#</th><th>产品</th><th>浏览量</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>云栖 · 布艺沙发</td><td>1,286</td></tr>
+              <tr><td>2</td><td>臻眠 · 乳胶床垫</td><td>1,042</td></tr>
+              <tr><td>3</td><td>云栖 · 实木床</td><td>896</td></tr>
+              <tr><td>4</td><td>衡宇 · 人体工学椅</td><td>774</td></tr>
+              <tr><td>5</td><td>简序 · 定制衣柜</td><td>652</td></tr>
+            </tbody></table>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>浏览量 Top 10 新闻</h3></div>
+            <table class="tbl"><thead><tr><th>#</th><th>新闻标题</th><th>浏览量</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>YT 荣获中国家具行业年度品牌奖</td><td>428</td></tr>
+              <tr><td>2</td><td>云栖系列新品发布会圆满举行</td><td>356</td></tr>
+              <tr><td>3</td><td>智能制造基地开放日</td><td>298</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>近 7 日留言量</h3></div>
+          <svg viewBox="0 0 860 160" style="width:100%;height:auto;">
+            <line x1="40" y1="140" x2="840" y2="140" stroke="#E5DCCE"/>
+            <g fill="#C9BBA0">
+              <rect x="60" y="112" width="46" height="28" rx="3"/><rect x="170" y="120" width="46" height="20" rx="3"/><rect x="280" y="96" width="46" height="44" rx="3"/><rect x="390" y="104" width="46" height="36" rx="3"/><rect x="500" y="88" width="46" height="52" rx="3"/><rect x="610" y="74" width="46" height="66" rx="3"/><rect x="720" y="80" width="46" height="60" rx="3"/>
+            </g>
+            <g fill="#6E675E" font-size="11" text-anchor="middle">
+              <text x="83" y="158">08-18</text><text x="193" y="158">08-19</text><text x="303" y="158">08-20</text><text x="413" y="158">08-21</text><text x="523" y="158">08-22</text><text x="633" y="158">08-23</text><text x="743" y="158">08-24</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- ===== 产品管理 ===== -->
+      <div class="page" id="page-products">
+        <div class="card">
+          <div class="card-head"><h3>产品管理</h3><button class="btn btn-primary btn-sm" onclick="openModal('productModal')">+ 新增产品</button></div>
+          <div class="filter-bar">
+            <input placeholder="按名称搜索"><select><option>全部系列</option><option>云栖</option><option>简序</option><option>臻眠</option><option>衡宇</option></select>
+            <select><option>全部分类</option><option>民用家具</option><option>办公家具</option><option>软体家具</option><option>全屋定制</option></select>
+            <select><option>全部状态</option><option>上架</option><option>下架</option></select>
+          </div>
+          <table class="tbl"><thead><tr><th>主图</th><th>产品名称</th><th>型号</th><th>系列</th><th>分类</th><th>状态</th><th>排序</th><th>浏览量</th><th>操作</th></tr></thead>
+          <tbody id="productRows"></tbody></table>
+          <div class="pagination"><span class="pg on">1</span><span class="pg">2</span><span class="pg">3</span></div>
+        </div>
+      </div>
+
+      <!-- ===== 新闻管理 ===== -->
+      <div class="page" id="page-news">
+        <div class="card">
+          <div class="card-head"><h3>新闻管理</h3><button class="btn btn-primary btn-sm" onclick="openModal('newsModal')">+ 新增新闻</button></div>
+          <div class="filter-bar"><input placeholder="按标题搜索"></div>
+          <table class="tbl"><thead><tr><th>标题</th><th>分类</th><th>摘要</th><th>发布时间</th><th>浏览量</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td>YT 荣获中国家具行业年度品牌奖</td><td><span class="tag">企业新闻</span><span class="tag p1">P1</span></td><td>连续第三年获此殊荣…</td><td>2026-08-12</td><td>428</td><td class="op-links"><a href="#" onclick="toast('原型演示：编辑新闻');return false;">编辑</a><a class="danger" href="#" onclick="toast('原型演示：删除新闻');return false;">删除</a></td></tr>
+            <tr><td>云栖系列新品发布会圆满举行</td><td><span class="tag">企业新闻</span><span class="tag p1">P1</span></td><td>以"自然、松弛"为设计语言…</td><td>2026-07-28</td><td>356</td><td class="op-links"><a href="#" onclick="toast('原型演示：编辑新闻');return false;">编辑</a><a class="danger" href="#" onclick="toast('原型演示：删除新闻');return false;">删除</a></td></tr>
+            <tr><td>2026 家具行业发展趋势解读</td><td><span class="tag">行业资讯</span><span class="tag p1">P1</span></td><td>从环保材料到智能制造…</td><td>2026-06-15</td><td>298</td><td class="op-links"><a href="#" onclick="toast('原型演示：编辑新闻');return false;">编辑</a><a class="danger" href="#" onclick="toast('原型演示：删除新闻');return false;">删除</a></td></tr>
+          </tbody></table>
+          <div class="pagination"><span class="pg on">1</span><span class="pg">2</span></div>
+        </div>
+      </div>
+
+      <!-- ===== 轮播图管理 ===== -->
+      <div class="page" id="page-banners">
+        <div class="card">
+          <div class="card-head"><h3>轮播图管理</h3><button class="btn btn-primary btn-sm" onclick="openModal('bannerModal')">+ 新增轮播图</button></div>
+          <div class="filter-bar"><span class="sub" style="font-size:12px;color:var(--ink-soft);">仅启用中的轮播图在前台展示（PRD H-06）</span></div>
+          <table class="tbl"><thead><tr><th>预览</th><th>标题</th><th>跳转链接</th><th>排序</th><th>状态</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td><div class="t-thumb" style="background:linear-gradient(160deg,#D8C9B0,#A98F6C);">Banner1</div></td><td>云栖系列新品上市</td><td>/products</td><td>1</td><td><span class="status on">启用</span></td><td class="op-links"><a href="#">编辑</a><a class="danger" href="#">停用</a><a class="danger" href="#">删除</a></td></tr>
+            <tr><td><div class="t-thumb" style="background:linear-gradient(160deg,#C7D0C2,#8FA393);">Banner2</div></td><td>全屋定制 · 焕新家</td><td>/products?category=定制</td><td>2</td><td><span class="status on">启用</span></td><td class="op-links"><a href="#">编辑</a><a class="danger" href="#">停用</a><a class="danger" href="#">删除</a></td></tr>
+            <tr><td><div class="t-thumb" style="background:linear-gradient(160deg,#E3D4C4,#C09C77);">Banner3</div></td><td>618 工厂直购节</td><td>/news</td><td>3</td><td><span class="status off">停用</span></td><td class="op-links"><a href="#">编辑</a><a href="#">启用</a><a class="danger" href="#">删除</a></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+
+      <!-- ===== 公司介绍管理 ===== -->
+      <div class="page" id="page-company">
+        <div class="card">
+          <div class="card-head"><h3>公司介绍管理</h3><span class="sub">分区编辑，保存后前台即时反映（PRD H-07 / B-05）</span></div>
+          <div class="tab-bar">
+            <span class="tb on">企业简介</span><span class="tb">发展历程</span><span class="tb">荣誉资质</span><span class="tb">工艺理念</span><span class="tb">联系信息</span>
+          </div>
+          <div class="frow">
+            <div class="field full"><label>品牌 Slogan</label><input value="好家具，为生活留一份从容"></div>
+            <div class="field full"><label>企业简介（富文本）</label><textarea style="min-height:140px;">YT 家具始建于 1953 年，是一家集研发、制造、销售于一体的大型现代化家具企业。公司现有厂区 30 万平方米，拥有多条智能化家具生产线，全面推行精益化管理，环保水平处于行业先进之列。先后荣获中国驰名商标、国家质量奖等上百项荣誉。</textarea></div>
+            <div class="field full"><label>简介配图</label><div class="upload-box">点击上传图片（对接对象存储，PRD H-08）</div></div>
+            <div class="field"><label>招聘投递邮箱（H-11，职位详情页展示）</label><input value="hr@yt-furniture.com"></div>
+            <div class="field"><label>招聘投递电话（H-11）</label><input value="0571-8888 0000"></div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:8px;">
+            <button class="btn btn-primary" onclick="toast('公司介绍已保存')">保存</button>
+            <button class="btn btn-default">重置</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 职位管理 ===== -->
+      <div class="page" id="page-jobs">
+        <div class="card">
+          <div class="card-head"><h3>职位管理</h3><button class="btn btn-primary btn-sm" onclick="openModal('jobModal')">+ 新增职位</button></div>
+          <div class="filter-bar">
+            <input placeholder="按职位名称搜索">
+            <select><option>全部类型</option><option>社会招聘</option><option>校园招聘</option></select>
+            <select><option>全部状态</option><option>招聘中</option><option>已关闭</option></select>
+            <span class="sub" style="font-size:12px;color:var(--ink-soft);">已关闭职位前台不展示（PRD L-04）</span>
+          </div>
+          <table class="tbl"><thead><tr><th>职位名称</th><th>类型</th><th>部门</th><th>工作地点</th><th>招聘人数</th><th>发布时间</th><th>浏览量</th><th>状态</th><th>操作</th></tr></thead>
+          <tbody id="jobRows"></tbody></table>
+          <div class="pagination"><span class="pg on">1</span></div>
+        </div>
+      </div>
+
+      <!-- ===== 留言线索 ===== -->
+      <div class="page" id="page-messages">
+        <div class="card">
+          <div class="card-head"><h3>留言线索管理</h3>
+            <div><button class="btn btn-default btn-sm" onclick="toast('导出 CSV（P1 功能）')">导出 CSV <span class="tag p1">P1</span></button></div>
+          </div>
+          <div class="filter-bar">
+            <select><option>全部状态</option><option>新</option><option>已联系</option><option>已处理</option></select>
+          </div>
+          <table class="tbl"><thead><tr><th>姓名</th><th>电话</th><th>留言内容</th><th>来源</th><th>状态</th><th>提交时间</th><th>操作</th></tr></thead>
+          <tbody id="msgRows"></tbody></table>
+          <div class="pagination"><span class="pg on">1</span><span class="pg">2</span></div>
+        </div>
+      </div>
+
+      <!-- ===== 用户管理 ===== -->
+      <div class="page" id="page-users">
+        <div class="card">
+          <div class="card-head"><h3>系统用户管理</h3><button class="btn btn-primary btn-sm" onclick="openModal('userModal')">+ 新增用户</button></div>
+          <div class="filter-bar"><input placeholder="按用户名 / 姓名搜索"><select><option>全部角色</option><option>系统管理员</option><option>内容编辑</option><option>客服</option></select></div>
+          <table class="tbl"><thead><tr><th>用户名</th><th>姓名</th><th>角色</th><th>状态</th><th>最后登录</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td>sysadmin</td><td>系统管理员</td><td><span class="tag">系统管理员</span></td><td><span class="status on">启用</span></td><td>2026-08-24 20:12</td><td class="op-links"><a href="#" onclick="toast('原型演示：编辑用户');return false;">编辑</a><a href="#" onclick="toast('原型演示：重置密码');return false;">重置密码</a></td></tr>
+            <tr><td>zhangwei</td><td>张伟</td><td><span class="tag">内容编辑</span></td><td><span class="status on">启用</span></td><td>2026-08-23 16:40</td><td class="op-links"><a href="#">编辑</a><a href="#">重置密码</a><a class="danger" href="#">停用</a></td></tr>
+            <tr><td>lina</td><td>李娜</td><td><span class="tag">客服</span></td><td><span class="status off">停用</span></td><td>2026-08-10 09:20</td><td class="op-links"><a href="#">编辑</a><a href="#">重置密码</a><a href="#">启用</a></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+
+      <!-- ===== 角色与权限 ===== -->
+      <div class="page" id="page-roles">
+        <div class="role-cards">
+          <div class="role-card"><h4>系统管理员 <span class="rc">system</span></h4><p>拥有全部后台权限</p><div class="perm">全部模块 read + write（含用户与角色管理）</div></div>
+          <div class="role-card"><h4>内容编辑 <span class="rc">editor</span></h4><p>负责产品 / 新闻 / 轮播图 / 公司介绍 / 职位维护</p><div class="perm">product · news · banner · company · job：read + write</div></div>
+          <div class="role-card"><h4>客服 <span class="rc">service</span></h4><p>负责在线留言跟进</p><div class="perm">message：read + write</div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>角色 × 权限矩阵（模块级）</h3><span class="sub">MVP 阶段角色为预设，不可在后台增删（PRD G-11）</span></div>
+          <table class="tbl perm-matrix"><thead><tr><th>权限点</th><th>系统管理员</th><th>内容编辑</th><th>客服</th></tr></thead>
+          <tbody>
+            <tr><td>product:read / product:write</td><td class="ok">✓ / ✓</td><td class="ok">✓ / ✓</td><td class="no">— / —</td></tr>
+            <tr><td>news:read / news:write</td><td class="ok">✓ / ✓</td><td class="ok">✓ / ✓</td><td class="no">— / —</td></tr>
+            <tr><td>banner:read / banner:write</td><td class="ok">✓ / ✓</td><td class="ok">✓ / ✓</td><td class="no">— / —</td></tr>
+            <tr><td>company:read / company:write</td><td class="ok">✓ / ✓</td><td class="ok">✓ / ✓</td><td class="no">— / —</td></tr>
+            <tr><td>job:read / job:write</td><td class="ok">✓ / ✓</td><td class="ok">✓ / ✓</td><td class="no">— / —</td></tr>
+            <tr><td>message:read / message:write</td><td class="ok">✓ / ✓</td><td class="no">— / —</td><td class="ok">✓ / ✓</td></tr>
+            <tr><td>user:read / user:write</td><td class="ok">✓ / ✓</td><td class="no">— / —</td><td class="no">— / —</td></tr>
+            <tr><td>role:read</td><td class="ok">✓</td><td class="no">—</td><td class="no">—</td></tr>
+            <tr><td>stats:read</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td></tr>
+          </tbody></table>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>权限点列表（16 个，只读）</h3></div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <span class="tag">product:read</span><span class="tag">product:write</span><span class="tag">news:read</span><span class="tag">news:write</span><span class="tag">banner:read</span><span class="tag">banner:write</span><span class="tag">company:read</span><span class="tag">company:write</span><span class="tag">job:read</span><span class="tag">job:write</span><span class="tag">message:read</span><span class="tag">message:write</span><span class="tag">user:read</span><span class="tag">user:write</span><span class="tag">role:read</span><span class="tag">stats:read</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：新增产品 ============ -->
+<div class="modal-mask" id="productModal">
+  <div class="modal">
+    <div class="modal-head"><h3>新增产品</h3><button class="x" onclick="closeModal('productModal')">×</button></div>
+    <div class="modal-body">
+      <div class="frow">
+        <div class="field"><label>产品名称 <i>*</i></label><input placeholder="如：云栖 · 布艺沙发"></div>
+        <div class="field"><label>型号</label><input placeholder="如：YQ-SF-3108"></div>
+        <div class="field"><label>所属系列 <i>*</i></label><select><option>云栖</option><option>简序</option><option>臻眠</option><option>衡宇</option></select></div>
+        <div class="field"><label>分类 <i>*</i></label><select><option>民用家具</option><option>办公家具</option><option>软体家具</option><option>全屋定制</option></select></div>
+        <div class="field"><label>排序</label><input placeholder="数值，越小越靠前"></div>
+        <div class="field"><label>状态</label><select><option>上架</option><option>下架</option></select></div>
+        <div class="field full"><label>主图 <i>*</i></label><div class="upload-box">点击上传主图（对象存储）</div></div>
+        <div class="field full"><label>详情图（多张）</label><div class="upload-box">点击上传详情图，支持多张</div></div>
+        <div class="field full"><label>参数（键值对：尺寸 / 材质 / 颜色等）</label><textarea placeholder='[{"尺寸":"3000×950×860 mm"},{"材质":"白蜡木 + 高回弹海绵"}]'></textarea></div>
+        <div class="field full"><label>图文描述（富文本）</label><textarea style="min-height:100px;">产品亮点、设计说明…（富文本：加粗、标题、图片插入、列表）</textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-default" onclick="closeModal('productModal')">取消</button><button class="btn btn-primary" onclick="closeModal('productModal');toast('产品已保存')">保存</button></div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：新增新闻 ============ -->
+<div class="modal-mask" id="newsModal">
+  <div class="modal">
+    <div class="modal-head"><h3>新增新闻</h3><button class="x" onclick="closeModal('newsModal')">×</button></div>
+    <div class="modal-body">
+      <div class="frow">
+        <div class="field full"><label>标题 <i>*</i></label><input placeholder="新闻标题"></div>
+        <div class="field"><label>发布时间 <i>*</i></label><input type="date" value="2026-08-24"></div>
+        <div class="field"><label>封面图</label><div class="upload-box">点击上传封面图</div></div>
+        <div class="field full"><label>摘要</label><input placeholder="列表页展示的摘要"></div>
+        <div class="field full"><label>正文（富文本）<i>*</i></label><textarea style="min-height:130px;">新闻正文…（富文本）</textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-default" onclick="closeModal('newsModal')">取消</button><button class="btn btn-primary" onclick="closeModal('newsModal');toast('新闻已发布')">发布</button></div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：新增轮播图 ============ -->
+<div class="modal-mask" id="bannerModal">
+  <div class="modal">
+    <div class="modal-head"><h3>新增轮播图</h3><button class="x" onclick="closeModal('bannerModal')">×</button></div>
+    <div class="modal-body">
+      <div class="frow">
+        <div class="field"><label>标题</label><input placeholder="轮播图标题"></div>
+        <div class="field"><label>排序</label><input placeholder="数值"></div>
+        <div class="field"><label>状态</label><select><option>启用</option><option>停用</option></select></div>
+        <div class="field"><label>跳转链接</label><input placeholder="如 /products"></div>
+        <div class="field full"><label>图片 <i>*</i></label><div class="upload-box">点击上传轮播图</div></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-default" onclick="closeModal('bannerModal')">取消</button><button class="btn btn-primary" onclick="closeModal('bannerModal');toast('轮播图已保存')">保存</button></div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：新增职位 ============ -->
+<div class="modal-mask" id="jobModal">
+  <div class="modal">
+    <div class="modal-head"><h3>新增职位</h3><button class="x" onclick="closeModal('jobModal')">×</button></div>
+    <div class="modal-body">
+      <div class="frow">
+        <div class="field"><label>职位名称 <i>*</i></label><input placeholder="如：区域销售经理"></div>
+        <div class="field"><label>类型 <i>*</i></label><select><option>社会招聘</option><option>校园招聘</option></select></div>
+        <div class="field"><label>部门</label><input placeholder="如：销售中心"></div>
+        <div class="field"><label>工作地点 <i>*</i></label><input placeholder="如：杭州"></div>
+        <div class="field"><label>招聘人数</label><input placeholder="如：2"></div>
+        <div class="field"><label>发布时间 <i>*</i></label><input type="date" value="2026-08-24"></div>
+        <div class="field"><label>状态</label><select><option>招聘中</option><option>已关闭</option></select></div>
+        <div class="field"><label>投递邮箱</label><input placeholder="缺省用公司介绍配置（H-11）"></div>
+        <div class="field full"><label>职位描述 / 职责（富文本）<i>*</i></label><textarea style="min-height:90px;">负责区域渠道开发与维护…</textarea></div>
+        <div class="field full"><label>任职要求（富文本）<i>*</i></label><textarea style="min-height:90px;">1. 大专及以上学历…；2. 能适应出差。</textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-default" onclick="closeModal('jobModal')">取消</button><button class="btn btn-primary" onclick="closeModal('jobModal');toast('职位已发布')">发布</button></div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：新增用户 ============ -->
+<div class="modal-mask" id="userModal">
+  <div class="modal">
+    <div class="modal-head"><h3>新增系统用户</h3><button class="x" onclick="closeModal('userModal')">×</button></div>
+    <div class="modal-body">
+      <div class="frow">
+        <div class="field"><label>用户名 <i>*</i></label><input placeholder="登录用，不可修改"></div>
+        <div class="field"><label>姓名</label><input placeholder="显示用"></div>
+        <div class="field"><label>密码 <i>*</i></label><input type="password" placeholder="bcrypt 加密存储"></div>
+        <div class="field"><label>角色 <i>*</i>（可多选）</label><select multiple style="min-height:88px;"><option>系统管理员</option><option selected>内容编辑</option><option>客服</option></select></div>
+        <div class="field full"><label>状态</label><div class="chips"><span class="on">启用</span><span>停用</span></div></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-default" onclick="closeModal('userModal')">取消</button><button class="btn btn-primary" onclick="closeModal('userModal');toast('用户已创建')">创建</button></div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：修改密码 ============ -->
+<div class="modal-mask" id="pwdModal">
+  <div class="modal" style="width:440px;">
+    <div class="modal-head"><h3>修改密码</h3><button class="x" onclick="closeModal('pwdModal')">×</button></div>
+    <div class="modal-body">
+      <div class="field"><label>当前密码 <i>*</i></label><input type="password"></div>
+      <div class="field"><label>新密码 <i>*</i></label><input type="password"></div>
+      <div class="field"><label>确认新密码 <i>*</i></label><input type="password"></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-default" onclick="closeModal('pwdModal')">取消</button><button class="btn btn-primary" onclick="closeModal('pwdModal');toast('密码已修改')">确认修改</button></div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：留言详情 ============ -->
+<div class="modal-mask" id="msgModal">
+  <div class="modal" style="width:520px;">
+    <div class="modal-head"><h3>留言详情</h3><button class="x" onclick="closeModal('msgModal')">×</button></div>
+    <div class="modal-body msg-detail" id="msgDetailBody">
+      <p><b>王女士</b>　138****0000　·　2026-08-24 20:02</p>
+      <p style="margin-top:10px;">想了解云栖布艺沙发的尺寸和价格，客厅大概 4 米宽，麻烦回电。</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-default" onclick="toast('删除留言（P1 功能）')">删除 <span class="tag p1">P1</span></button>
+      <div style="flex:1"></div>
+      <button class="btn btn-default" onclick="closeModal('msgModal');toast('状态已标记为已联系')">标记已联系</button>
+      <button class="btn btn-primary" onclick="closeModal('msgModal');toast('状态已标记为已处理')">标记已处理</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ RBAC 角色权限（PRD v1.4：三角色 × 16 权限点，含 job） ============ */
+const ROLES = {
+  system:   {name:'系统管理员', perms:['stats','product','news','banner','company','job','message','user','role']},
+  editor:  {name:'内容编辑',   perms:['stats','product','news','banner','company','job']},
+  service: {name:'客服',       perms:['stats','message']}
+};
+let curRole='system';
+
+/* ============ 登录 ============ */
+function pickRole(el){
+  document.querySelectorAll('.role-demo .r').forEach(r=>r.classList.remove('on'));
+  el.classList.add('on');
+}
+function doLogin(){
+  const r=document.querySelector('.role-demo .r.on').dataset.role;
+  curRole=r;
+  document.getElementById('loginView').style.display='none';
+  document.getElementById('adminView').classList.add('show');
+  document.getElementById('curName').textContent=ROLES[r].name;
+  document.getElementById('curRole').textContent=r;
+  document.getElementById('curAvatar').textContent=r==='system'?'S':r==='editor'?'E':'S';
+  applyPermMenu();
+  go('dashboard');
+  toast('登录成功 · 当前角色：'+ROLES[r].name+'（RBAC 权限已生效）');
+}
+function doLogout(){
+  document.getElementById('adminView').classList.remove('show');
+  document.getElementById('loginView').style.display='flex';
+}
+
+/* ============ 菜单按权限显示（PRD US-15 / G-13） ============ */
+function applyPermMenu(){
+  const perms=ROLES[curRole].perms;
+  document.querySelectorAll('.menu-item').forEach(m=>{
+    const need=m.dataset.perm;
+    m.style.display=perms.includes(need)?'flex':'none';
+  });
+}
+
+/* ============ 页面切换 ============ */
+const CRUMBS={dashboard:'工作台',products:'内容管理 / 产品管理',news:'内容管理 / 新闻管理',banners:'内容管理 / 轮播图管理',company:'内容管理 / 公司介绍',jobs:'内容管理 / 职位管理',messages:'客户线索 / 留言线索',users:'系统管理 / 用户管理',roles:'系统管理 / 角色与权限'};
+function go(page){
+  const perms=ROLES[curRole].perms;
+  const need=document.querySelector('.menu-item[data-page="'+page+'"]')?.dataset.perm;
+  if(need && !perms.includes(need)){toast('无权限访问该模块（RBAC 校验，返回 403）');return;}
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  const el=document.getElementById('page-'+page);
+  if(el){el.style.display='block';el.classList.add('active');}
+  document.querySelectorAll('.menu-item').forEach(m=>m.classList.toggle('on',m.dataset.page===page));
+  document.getElementById('crumbs').innerHTML='<b>'+CRUMBS[page]+'</b>';
+}
+
+/* ============ 弹窗 ============ */
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+
+/* ============ Toast ============ */
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+/* ============ 数据渲染 ============ */
+const PRODUCTS=[
+  {t:'云栖 · 布艺沙发',m:'YQ-SF-3108',s:'云栖',c:'民用',st:1,sort:1,v:1286},
+  {t:'云栖 · 实木床',m:'YQ-BD-2201',s:'云栖',c:'民用',st:1,sort:2,v:896},
+  {t:'云栖 · 电视柜',m:'YQ-TV-1180',s:'云栖',c:'民用',st:1,sort:3,v:452},
+  {t:'简序 · 定制衣柜',m:'JX-GW-C01',s:'简序',c:'定制',st:1,sort:4,v:652},
+  {t:'臻眠 · 乳胶床垫',m:'ZM-MT-902',s:'臻眠',c:'软体',st:0,sort:5,v:1042},
+  {t:'衡宇 · 人体工学椅',m:'HY-CH-5500',s:'衡宇',c:'办公',st:1,sort:6,v:774}
+];
+function renderProducts(){
+  document.getElementById('productRows').innerHTML=PRODUCTS.map(p=>`
+    <tr><td><div class="t-thumb">${p.s}图</div></td><td>${p.t}</td><td>${p.m}</td><td>${p.s}</td><td>${p.c}</td>
+    <td><span class="status ${p.st?'on':'off'}">${p.st?'上架':'下架'}</span></td><td>${p.sort}</td><td>${p.v}</td>
+    <td class="op-links"><a href="#" onclick="toast('原型演示：编辑产品');return false;">编辑</a><a href="#" onclick="toast('${p.st?'已下架':'已上架'}');return false;">${p.st?'下架':'上架'}</a><a class="danger" href="#" onclick="toast('二次确认后删除');return false;">删除</a></td></tr>`).join('');
+}
+const MESSAGES=[
+  {n:'王女士',p:'138****0000',c:'想了解云栖布艺沙发的尺寸和价格…',src:'普通留言',st:'new',t:'2026-08-24 20:02'},
+  {n:'刘先生',p:'159****2233',c:'咨询全屋定制方案，三室两厅…',src:'普通留言',st:'new',t:'2026-08-24 19:45'},
+  {n:'陈小姐',p:'186****7788',c:'请问办公系列是否有工程案例…',src:'普通留言',st:'new',t:'2026-08-24 18:30'},
+  {n:'赵先生',p:'135****9001',c:'想了解加盟政策，本人经营家居店 5 年…',src:'加盟申请(P1)',st:'contacted',t:'2026-08-23 15:12'},
+  {n:'孙女士',p:'137****6611',c:'沙发售后问题，皮面有褶皱…',src:'普通留言',st:'done',t:'2026-08-22 10:05'}
+];
+function renderMessages(){
+  const stMap={new:'<span class="status new">新</span>',contacted:'<span class="status contacted">已联系</span>',done:'<span class="status done">已处理</span>'};
+  document.getElementById('msgRows').innerHTML=MESSAGES.map(m=>`
+    <tr><td>${m.n}</td><td>${m.p}</td><td>${m.c}</td><td>${m.src}</td><td>${stMap[m.st]}</td><td>${m.t}</td>
+    <td class="op-links"><a href="#" onclick="openMsg('${m.n}','${m.p}','${m.t}','${m.c}');return false;">查看</a></td></tr>`).join('');
+  const cnt=MESSAGES.filter(m=>m.st==='new').length;
+  const b=document.getElementById('msgBadge');
+  b.textContent=cnt;b.style.display=cnt?'inline-block':'none';
+}
+function openMsg(n,p,t,c){
+  document.getElementById('msgDetailBody').innerHTML=`<p><b>${n}</b>　${p}　·　${t}</p><p style="margin-top:10px;">${c}</p>`;
+  openModal('msgModal');
+}
+
+/* ============ 职位数据（PRD v1.4 / 8.14 job_position） ============ */
+const JOBS=[
+  {t:'区域销售经理',ty:'社会招聘',d:'销售中心',loc:'杭州',c:2,time:'2026-08-10',v:186,st:1},
+  {t:'家具产品设计师',ty:'社会招聘',d:'设计研发中心',loc:'杭州',c:1,time:'2026-08-05',v:154,st:1},
+  {t:'电商运营专员',ty:'社会招聘',d:'电商事业部',loc:'杭州',c:2,time:'2026-07-28',v:98,st:1},
+  {t:'管理培训生（供应链方向）',ty:'校园招聘',d:'供应链中心',loc:'杭州',c:5,time:'2026-08-12',v:230,st:1},
+  {t:'设计实习生',ty:'校园招聘',d:'设计研发中心',loc:'杭州',c:3,time:'2026-08-08',v:172,st:0}
+];
+function renderJobs(){
+  document.getElementById('jobRows').innerHTML=JOBS.map(j=>`
+    <tr><td>${j.t}</td><td><span class="tag">${j.ty}</span></td><td>${j.d}</td><td>${j.loc}</td><td>${j.c} 人</td><td>${j.time}</td><td>${j.v}</td>
+    <td><span class="status ${j.st?'on':'off'}">${j.st?'招聘中':'已关闭'}</span></td>
+    <td class="op-links"><a href="#" onclick="toast('原型演示：编辑职位');return false;">编辑</a><a href="#" onclick="toast('${j.st?'已下线':'已上线'}');return false;">${j.st?'下线':'上线'}</a><a class="danger" href="#" onclick="toast('二次确认后删除');return false;">删除</a></td></tr>`).join('');
+}
+
+/* 初始化 */
+renderProducts();renderMessages();renderJobs();
+</script>
+</body>
+</html>
