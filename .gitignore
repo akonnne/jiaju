@@ -21,8 +21,10 @@ dist/
 
 # ---------- 数据库 ----------
 *.db
+*.sqlite
 *.sqlite3
 api/yt.db
+api/data/
 
 # ---------- 上传文件 ----------
 api/uploads/

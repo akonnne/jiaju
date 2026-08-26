@@ -1,0 +1,21 @@
+[Unit]
+Description=YT Furniture API (FastAPI + Uvicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=yt
+Group=yt
+WorkingDirectory=/var/www/jiaju/api
+# 依赖集中在 dependency/api/wheels，离线安装命令见 deploy/README.md
+ExecStart=/var/www/jiaju/api/.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 4
+Restart=always
+RestartSec=3
+EnvironmentFile=/var/www/jiaju/api/.env
+
+# 日志落盘（访问日志 uvicorn 自带；错误日志由 systemd 捕获）
+StandardOutput=append:/var/log/jiaju/api.log
+StandardError=append:/var/log/jiaju/api.log
+
+[Install]
+WantedBy=multi-user.target

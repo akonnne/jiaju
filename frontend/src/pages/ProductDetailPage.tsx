@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { productApi } from '../api'
 import type { ProductDetail } from '../api'
+import { sanitizeHtml } from '../utils/sanitize'
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -136,7 +137,7 @@ export default function ProductDetailPage() {
       {product.description && (
         <div className="mt-12">
           <h2 className="font-serif text-xl font-bold mb-4">产品详情</h2>
-          <div className="rich-content bg-white rounded-xl p-6 border border-line" dangerouslySetInnerHTML={{ __html: product.description }} />
+          <div className="rich-content bg-white rounded-xl p-6 border border-line" dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.description) }} />
         </div>
       )}
     </div>

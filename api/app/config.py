@@ -19,12 +19,17 @@ class Settings(BaseSettings):
     API_V1_PREFIX: str = "/api"
 
     # --- 数据库（开发期使用 SQLite）---
-    DATABASE_URL: str = "sqlite:///./yt.db"
+    # 注：环境的文件保护会锁定被写入过的 *.db 文件（只读），
+    #     故使用非 .db 后缀的 data/yt.sqlite（实测不受影响）
+    DATABASE_URL: str = "sqlite:///./data/yt.sqlite"
 
     # --- 安全 ---
     JWT_SECRET: str = "change-me-in-production"
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 2  # 2 天
+
+    # --- 联调/CI 辅助：为 true 时跳过登录验证码（仅本地联调用，生产必须 false）---
+    CAPTCHA_BYPASS: bool = False
 
     # --- CORS：允许前台(:5173)与后台(:5174)开发服务器 ---
     CORS_ORIGINS: str = "http://localhost:5173,http://localhost:5174"

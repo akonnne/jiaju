@@ -1,0 +1,26 @@
+# YT 家具官网 · docker-compose（步骤 7.9）
+# 用法：cd deploy && docker compose up -d --build
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: jiaju-api
+    restart: always
+    environment:
+      # 生产必须覆盖（勿用默认值）
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://www.yt-domain.com,https://sys.yt-domain.com}
+      INIT_SYSADMIN_PASSWORD: ${INIT_SYSADMIN_PASSWORD:-YT@2026}
+      CAPTCHA_BYPASS: "false"
+    volumes:
+      - jiaju-data:/app/data      # SQLite 持久化
+      - jiaju-uploads:/app/uploads
+    ports:
+      - "127.0.0.1:8000:8000"     # 仅本机，Nginx 反代
+
+  # 前台/后台静态站由 Nginx 直接托管（deploy/nginx.conf），无需容器
+
+volumes:
+  jiaju-data:
+  jiaju-uploads:

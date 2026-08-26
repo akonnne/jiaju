@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { jobApi } from '../api'
 import type { JobDetail } from '../api'
+import { sanitizeHtml } from '../utils/sanitize'
 
 export default function JobDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -48,14 +49,14 @@ export default function JobDetailPage() {
       {job.description && (
         <section className="mb-8">
           <h2 className="font-serif text-lg font-bold border-b border-line pb-2 mb-4">职位描述 / 职责</h2>
-          <div className="rich-content" dangerouslySetInnerHTML={{ __html: job.description }} />
+          <div className="rich-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(job.description) }} />
         </section>
       )}
 
       {job.requirement && (
         <section className="mb-8">
           <h2 className="font-serif text-lg font-bold border-b border-line pb-2 mb-4">任职要求</h2>
-          <div className="rich-content" dangerouslySetInnerHTML={{ __html: job.requirement }} />
+          <div className="rich-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(job.requirement) }} />
         </section>
       )}
 

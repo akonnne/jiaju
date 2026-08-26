@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { companyApi } from '../api'
 import type { CompanyInfo } from '../api'
+import { sanitizeHtml } from '../utils/sanitize'
 
 export default function AboutPage() {
   const [company, setCompany] = useState<CompanyInfo>({})
@@ -27,7 +28,7 @@ export default function AboutPage() {
           <div>
             <h2 className="font-serif text-2xl font-bold mb-4">匠心四十载 · 让家更懂你</h2>
             {company.intro ? (
-              <div className="rich-content" dangerouslySetInnerHTML={{ __html: company.intro }} />
+              <div className="rich-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(company.intro) }} />
             ) : (
               <p className="text-ink-soft leading-7">
                 YT 家具创立于 1986 年，专注民用 / 办公 / 软体家具制造，

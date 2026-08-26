@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { newsApi } from '../api'
 import type { NewsDetail } from '../api'
+import { sanitizeHtml } from '../utils/sanitize'
 
 export default function NewsDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -43,7 +44,7 @@ export default function NewsDetailPage() {
         <span>{news.category === 'enterprise' ? '企业新闻' : '行业资讯'}</span>
       </div>
 
-      <div className="rich-content" dangerouslySetInnerHTML={{ __html: news.content }} />
+      <div className="rich-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(news.content) }} />
     </div>
   )
 }

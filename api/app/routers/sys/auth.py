@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.config import settings
 from app.database import get_db
 from app.middleware.auth import (
     create_access_token,
@@ -58,8 +59,8 @@ def captcha_image():
 
 @router.post("/login")
 def login(payload: LoginRequest, request: Request, db: Session = Depends(get_db)):
-    # 1) 验证码（校验后作废）
-    if not captcha.verify(payload.captcha_id, payload.captcha):
+    # 1) 验证码（校验后作废；CAPTCHA_BYPASS=true 时跳过，仅供本地联调）
+    if not settings.CAPTCHA_BYPASS and not captcha.verify(payload.captcha_id, payload.captcha):
         raise HTTPException(status_code=401, detail={"message": "验证码错误"})
 
     # 2) 失败锁定检查
