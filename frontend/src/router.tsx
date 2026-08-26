@@ -1,27 +1,40 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 import MainLayout from './layouts/MainLayout'
-import * as P from './pages/placeholders'
+import HomePage from './pages/HomePage'
+import ProductsPage from './pages/ProductsPage'
+import ProductDetailPage from './pages/ProductDetailPage'
+import CasesPage from './pages/CasesPage'
+import NewsPage from './pages/NewsPage'
+import NewsDetailPage from './pages/NewsDetailPage'
+import CareersPage from './pages/CareersPage'
+import CareersListPage from './pages/CareersListPage'
+import JobDetailPage from './pages/JobDetailPage'
+import AboutPage from './pages/AboutPage'
+import MilestonesPage from './pages/MilestonesPage'
+import BrandPage from './pages/BrandPage'
+import ContactPage from './pages/ContactPage'
 
-// 前台 14 个路由（对应产品原型页面）
+// 前台 14 页路由（技术文档 v1.7 §5.3）
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <MainLayout />,
     children: [
-      { index: true, element: <P.Home /> },
-      { path: 'products', element: <P.Products /> },
-      { path: 'products/:id', element: <P.ProductDetail /> },
-      { path: 'cases', element: <P.CasesPlaceholder /> },
-      { path: 'news', element: <P.News /> },
-      { path: 'news/:id', element: <P.NewsDetail /> },
-      { path: 'careers', element: <P.Careers /> },
-      { path: 'careers/social', element: <P.CareersSocial /> },
-      { path: 'careers/campus', element: <P.CareersCampus /> },
-      { path: 'careers/:id', element: <P.JobDetail /> },
-      { path: 'about', element: <P.About /> },
-      { path: 'about/milestones', element: <P.AboutMilestones /> },
-      { path: 'about/brand', element: <P.AboutBrand /> },
-      { path: 'contact', element: <P.Contact /> }
+      { index: true, element: <HomePage /> },
+      { path: 'products', element: <ProductsPage /> },
+      { path: 'products/:id', element: <ProductDetailPage /> },
+      { path: 'cases', element: <CasesPage /> },
+      { path: 'news', element: <NewsPage /> },
+      { path: 'news/:id', element: <NewsDetailPage /> },
+      { path: 'careers', element: <CareersPage /> },
+      { path: 'careers/social', element: <CareersListPage /> },
+      { path: 'careers/campus', element: <CareersListPage /> },
+      { path: 'careers/:id', element: <JobDetailPage /> },
+      { path: 'about', element: <AboutPage /> },
+      { path: 'about/milestones', element: <MilestonesPage /> },
+      { path: 'about/brand', element: <BrandPage /> },
+      { path: 'contact', element: <ContactPage /> }
     ]
-  }
+  },
+  { path: '*', element: <Navigate to="/" replace /> }
 ])

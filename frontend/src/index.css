@@ -4,8 +4,78 @@
 
 :root {
   color-scheme: light;
+  /* UIUX 设计规范 token（技术文档 v1.7 §5.2） */
+  --walnut: #7a5c3e;
+  --walnut-dark: #5f4730;
+  --ink: #2b2520;
+  --ink-soft: #6e675e;
+  --cream: #faf7f1;
+  --sand: #f0eae1;
+  --line: #e5dcce;
+  --p1: #b98a4e;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   @apply bg-cream text-ink font-sans antialiased;
+  margin: 0;
+}
+
+/* 焦点环（A11y） */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--walnut);
+  outline-offset: 2px;
+}
+
+/* 尊重减少动效偏好 */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 富文本正文通用样式（新闻详情 / 产品描述） */
+.rich-content {
+  line-height: 1.9;
+  font-size: 15px;
+  color: #2b2520;
+}
+.rich-content h1,
+.rich-content h2,
+.rich-content h3 {
+  font-family: '"Noto Serif SC"', 'Songti SC', serif;
+  margin: 1.2em 0 0.5em;
+  color: #2b2520;
+}
+.rich-content p {
+  margin: 0.8em 0;
+}
+.rich-content img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 12px 0;
+}
+.rich-content ul,
+.rich-content ol {
+  padding-left: 1.4em;
+  margin: 0.8em 0;
+}
+.rich-content blockquote {
+  border-left: 3px solid var(--walnut);
+  padding-left: 12px;
+  color: #6e675e;
+  margin: 1em 0;
 }
